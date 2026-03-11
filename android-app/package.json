@@ -1,0 +1,20 @@
+{
+    "name": "pdf-editor-android",
+    "version": "1.0.0",
+    "description": "PDF Editor Android App",
+    "main": "index.js",
+    "scripts": {
+        "build": "echo no build needed",
+        "cap": "cap"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@capacitor/android": "^6.0.0",
+        "@capacitor/core": "^6.0.0"
+    },
+    "devDependencies": {
+        "@capacitor/cli": "^6.0.0"
+    }
+}

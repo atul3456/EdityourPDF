@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>EdityourPDF - Free Online PDF & Image Tools</title>
+    <meta name="description"
+        content="Free online PDF tools: edit, merge, compress, split, rotate, watermark, convert, OCR, and more. No signup required.">
+    <meta property="og:title" content="EdityourPDF - Free Online PDF Tools">
+    <meta property="og:description"
+        content="Edit, merge, compress, split, rotate, watermark, and convert PDFs online for free.">
+    <meta property="og:type" content="website">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Inter:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&family=Montserrat:wght@300;400;600;700&family=Open+Sans:wght@300;400;600;700&family=Outfit:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;600&family=Raleway:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF Lib (Cantoo fork for Encryption) -->
+    <script src="https://unpkg.com/@cantoo/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@0.0.4"></script>
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <!-- PPTX Gen -->
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <!-- Docx -->
+    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+    <!-- Tesseract.js for Client-Side OCR -->
+    <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
+    <!-- JSZip for multi-file downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="style.css?v=7">
+    <!-- Generate Image Tool (standalone) -->
+    <link rel="stylesheet" href="generate-image.css?v=1">
+</head>
+
+<body>
+
+    <div class="background-mesh">
+        <div class="mesh-1"></div>
+        <div class="mesh-2"></div>
+        <div class="mesh-3"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <div class="app-container">
+
+        <!-- Main Content (Full Width) -->
+        <main class="glass-content full-width">
+
+            <!-- ===== SITE NAVBAR ===== -->
+            <nav class="site-navbar" id="site-navbar">
+                <div class="navbar-inner">
+                    <!-- Brand -->
+                    <a href="#" class="navbar-brand" id="nav-brand"
+                        onclick="event.preventDefault();document.querySelectorAll('.img-tool-section,#img-editor-dashboard').forEach(s=>s.classList.add('hidden'));document.getElementById('home-dashboard').classList.remove('hidden');">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>EdityourPDF</span>
+                    </a>
+
+                    <!-- Desktop Links -->
+                    <div class="navbar-links">
+                        <a href="index.html" class="nav-link" id="nav-pdf-tools">
+                            <i class="fa-solid fa-file-pdf"></i> PDF Tools
+                        </a>
+                        <a href="image-editor.html" class="nav-link" id="nav-img-editor">
+                            <i class="fa-solid fa-image"></i> Image Editor
+                        </a>
+                        <a href="about.html" class="nav-link" id="nav-about">
+                            <i class="fa-solid fa-circle-info"></i> About
+                        </a>
+                        <a href="help.html" class="nav-link" id="nav-help">
+                            <i class="fa-solid fa-circle-question"></i> Help
+                        </a>
+                        <a href="feedback.html" class="nav-link" id="nav-feedback">
+                            <i class="fa-solid fa-comment-dots"></i> Feedback
+                        </a>
+                        <a href="donate.html" class="nav-link nav-link-donate" id="nav-donate">
+                            <i class="fa-solid fa-heart"></i> Donate
+                        </a>
+                        <!-- Support Dropdown -->
+                        <div class="nav-dropdown-wrap">
+                            <button class="nav-link nav-support-btn" id="nav-support-btn">
+                                <i class="fa-solid fa-share-nodes"></i> Support <i class="fa-solid fa-chevron-down"
+                                    style="font-size:0.7rem;margin-left:3px;"></i>
+                            </button>
+                            <div class="nav-dropdown" id="nav-support-dropdown">
+                                <a href="https://www.instagram.com/matrixed._.atul._" target="_blank"
+                                    class="dropdown-item"><i class="fa-brands fa-instagram" style="color:#e1306c;"></i>
+                                    Instagram</a>
+
+                                <a href="https://x.com/atulv145112" target="_blank" class="dropdown-item"><i
+                                        class="fa-brands fa-x-twitter" style="color:#fff;"></i> X</a>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hamburger (mobile) -->
+                    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu"
+                        onclick="document.getElementById('nav-drawer').classList.add('open');document.getElementById('nav-drawer-overlay').classList.add('open');document.body.style.overflow='hidden';">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Mobile Drawer Overlay -->
+            <div class="nav-drawer-overlay" id="nav-drawer-overlay"
+                onclick="document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-drawer-overlay').classList.remove('open');document.body.style.overflow='';">
+            </div>
+
+            <!-- Mobile Drawer -->
+            <div class="nav-drawer" id="nav-drawer">
+                <div class="drawer-header">
+                    <span class="drawer-brand"><i class="fa-solid fa-layer-group"></i> EdityourPDF</span>
+                    <button class="drawer-close" id="nav-drawer-close"
+                        onclick="document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-drawer-overlay').classList.remove('open');document.body.style.overflow='';">✕</button>
+                </div>
+                <div class="drawer-links">
+                    <a href="index.html" class="drawer-link" id="drawer-pdf-tools"><i class="fa-solid fa-file-pdf"></i>
+                        PDF
+                        Tools</a>
+                    <a href="image-editor.html" class="drawer-link" id="drawer-img-editor"><i
+                            class="fa-solid fa-image"></i> Image
+                        Editor</a>
+                    <div class="drawer-divider"></div>
+                    <a href="about.html" class="drawer-link" id="drawer-about"><i class="fa-solid fa-circle-info"></i>
+                        About
+                        Us</a>
+                    <a href="help.html" class="drawer-link" id="drawer-help"><i class="fa-solid fa-circle-question"></i>
+                        Help</a>
+                    <a href="feedback.html" class="drawer-link" id="drawer-feedback"><i
+                            class="fa-solid fa-comment-dots"></i>
+                        Feedback</a>
+                    <a href="donate.html" class="drawer-link nav-link-donate" id="drawer-donate"><i
+                            class="fa-solid fa-heart"></i>
+                        Donate Us</a>
+                    <div class="drawer-divider"></div>
+                    <p class="drawer-section-title">Follow Us</p>
+                    <div class="drawer-social">
+                        <a href="https://www.instagram.com/matrixed._.atul._" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.facebook.com" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-facebook"></i></a>
+                        <a href="https://www.youtube.com" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-youtube"></i></a>
+                        <a href="https://x.com/atulv145112" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-x-twitter"></i></a>
+                        <a href="https://www.whatsapp.com" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://www.telegram.org" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-telegram"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOME DASHBOARD -->
+            <section id="home-dashboard" class="glass-content full-width flex-center">
+                <div class="home-grid" style="flex-wrap: wrap; justify-content: center;">
+                    <!-- Row 1: Core Tools -->
+                    <div class="tool-card large" id="card-editor">
+                        <i class="fa-solid fa-pen-to-square icon-large"></i>
+                        <h2>PDF Editor</h2>
+                        <p>Edit text, image, crop.</p>
+                    </div>
+                    <div class="tool-card large" id="card-merge">
+                        <i class="fa-solid fa-layer-group icon-large"></i>
+                        <h2>Merge PDFs</h2>
+                        <p>Combine multiple files.</p>
+                    </div>
+                    <div class="tool-card large" id="card-split">
+                        <i class="fa-solid fa-scissors icon-large"></i>
+                        <h2>Split PDF</h2>
+                        <p>Extract or split pages.</p>
+                    </div>
+                    <div class="tool-card large" id="card-compress">
+                        <i class="fa-solid fa-file-zipper icon-large"></i>
+                        <h2>Compress PDF</h2>
+                        <p>Optimize file size.</p>
+                    </div>
+
+                    <!-- Row 2: Convert Tools -->
+                    <div class="tool-card large" id="card-convert">
+                        <i class="fa-solid fa-arrow-right-arrow-left icon-large"></i>
+                        <h2>Convert Files</h2>
+                        <p>PDF ↔ IMG</p>
+                    </div>
+                    <div class="tool-card large" id="card-photo-pdf">
+                        <i class="fa-solid fa-images icon-large"></i>
+                        <h2>Photo to PDF</h2>
+                        <p>Images → PDF.</p>
+                    </div>
+                    <div class="tool-card large" id="card-pdf-ppt">
+                        <i class="fa-solid fa-file-powerpoint icon-large"></i>
+                        <h2>PDF to PPT</h2>
+                        <p>PDF → PowerPoint.</p>
+                    </div>
+                    <div class="tool-card large" id="card-pdf-word">
+                        <i class="fa-solid fa-file-word icon-large"></i>
+                        <h2>PDF to Word</h2>
+                        <p>PDF → DOCX.</p>
+                    </div>
+
+                    <!-- Row 3: Utility Tools -->
+                    <div class="tool-card large" id="card-rotate">
+                        <i class="fa-solid fa-rotate icon-large"></i>
+                        <h2>Rotate PDF</h2>
+                        <p>Rotate pages.</p>
+                    </div>
+                    <div class="tool-card large" id="card-watermark">
+                        <i class="fa-solid fa-droplet icon-large"></i>
+                        <h2>Watermark</h2>
+                        <p>Add text watermark.</p>
+                    </div>
+                    <div class="tool-card large" id="card-pagenums">
+                        <i class="fa-solid fa-list-ol icon-large"></i>
+                        <h2>Page Numbers</h2>
+                        <p>Number your pages.</p>
+                    </div>
+                    <div class="tool-card large" id="card-security">
+                        <i class="fa-solid fa-shield-halved icon-large"></i>
+                        <h2>PDF Security</h2>
+                        <p>Protect & Unlock.</p>
+                    </div>
+
+                    <!-- Row 4: AI & Advanced -->
+                    <div class="tool-card large" id="card-ocr">
+                        <i class="fa-solid fa-eye icon-large"></i>
+                        <h2>OCR PDF</h2>
+                        <p>Make text searchable.</p>
+                    </div>
+                    <div class="tool-card large" id="card-summarize">
+                        <i class="fa-solid fa-wand-magic-sparkles icon-large"></i>
+                        <h2>Summarize PDF</h2>
+                        <p>AI summary (Gemini).</p>
+                    </div>
+                    <div class="tool-card large" id="card-pdf-excel">
+                        <i class="fa-solid fa-file-excel icon-large"></i>
+                        <h2>PDF to Excel</h2>
+                        <p>Extract tables to CSV.</p>
+                    </div>
+                    <div class="tool-card large" id="card-pdf-writer">
+                        <i class="fa-solid fa-file-lines icon-large"></i>
+                        <h2>PDF to Writer</h2>
+                        <p>PDF → ODT/DOC.</p>
+                    </div>
+
+                    <!-- Row 5: New Tools -->
+                    <div class="tool-card large" id="card-reorder">
+                        <i class="fa-solid fa-arrows-up-down-left-right icon-large"></i>
+                        <h2>Reorder Pages</h2>
+                        <p>Drag & drop to reorder.</p>
+                    </div>
+                    <div class="tool-card large" id="card-pdf-text">
+                        <i class="fa-solid fa-file-alt icon-large"></i>
+                        <h2>PDF to Text</h2>
+                        <p>Extract plain text.</p>
+                    </div>
+                    <div class="tool-card large" id="card-metadata">
+                        <i class="fa-solid fa-circle-info icon-large"></i>
+                        <h2>PDF Metadata</h2>
+                        <p>View file properties.</p>
+                    </div>
+
+                    <!-- Row 6: New Premium Tools -->
+                    <div class="tool-card large" id="card-redact">
+                        <i class="fa-solid fa-marker icon-large"></i>
+                        <h2>Redact PDF</h2>
+                        <p>Black out sensitive info.</p>
+                    </div>
+                    <div class="tool-card large" id="card-compare">
+                        <i class="fa-solid fa-code-compare icon-large"></i>
+                        <h2>Compare PDFs</h2>
+                        <p>Visual side-by-side diff.</p>
+                    </div>
+                    <div class="tool-card large" id="card-pdf-markdown">
+                        <i class="fa-brands fa-markdown icon-large"></i>
+                        <h2>PDF to Markdown</h2>
+                        <p>Extract formatted .md text.</p>
+                    </div>
+                    <div class="tool-card large" id="card-form-filler">
+                        <i class="fa-solid fa-pen-clip icon-large"></i>
+                        <h2>Fill PDF Form</h2>
+                        <p>Fill & flatten form fields.</p>
+                    </div>
+                    <div class="tool-card large" id="card-delete-pages">
+                        <i class="fa-solid fa-file-circle-minus icon-large"></i>
+                        <h2>Delete Pages</h2>
+                        <p>Remove specific pages.</p>
+                    </div>
+                    <div class="tool-card large" id="card-page-resize">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center icon-large"></i>
+                        <h2>Resize Pages</h2>
+                        <p>A4, Letter, Legal, Custom.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MERGE TOOL SECTION -->
+            <section id="merge-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>Merge PDFs</h2>
+                    <div class="upload-zone" id="merge-drop-zone">
+                        <i class="fa-solid fa-copy"></i>
+                        <p>Drop multiple PDFs here</p>
+                        <input type="file" id="merge-upload-input" multiple accept=".pdf" hidden>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PHOTO TO PDF SECTION -->
+            <section id="photo-pdf-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>Photo to PDF</h2>
+                    <div class="upload-zone" id="photo-drop-zone">
+                        <i class="fa-regular fa-images"></i>
+                        <p>Drop Images (JPG, PNG) here</p>
+                        <input type="file" id="photo-upload-input" multiple accept="image/*" hidden>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- OCR SECTION -->
+            <section id="ocr-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF OCR (Searchable)</h2>
+                    <div class="upload-zone" id="ocr-drop-zone">
+                        <i class="fa-solid fa-eye"></i>
+                        <p>Drop Scanned PDF</p>
+                        <input type="file" id="ocr-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="ocr-processing" class="hidden">
+                        <div class="spinner"></div>
+                        <p>Processing text... (This may take a while)</p>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- SUMMARIZE SECTION -->
+            <section id="summarize-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box" style="max-width:700px;">
+                    <h2><i class="fa-solid fa-wand-magic-sparkles" style="color:#a78bfa;"></i> Summarize PDF with AI
+                    </h2>
+                    <p style="color:#a5b4fc;font-size:0.9rem;margin-bottom:15px;">Upload any PDF and get an AI-generated
+                        summary powered by Gemini.</p>
+
+                    <!-- Upload Zone -->
+                    <div class="upload-zone" id="summarize-drop-zone">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <p>Drop PDF here or tap to select</p>
+                        <input type="file" id="summarize-upload-input" accept=".pdf" hidden>
+                    </div>
+
+                    <!-- File info -->
+                    <div id="summarize-file-info" style="display:none;color:#a5b4fc;font-size:0.9rem;margin-top:10px;">
+                    </div>
+
+                    <!-- Options Panel -->
+                    <div id="summarize-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;margin-top:15px;box-sizing:border-box;">
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:15px;">
+                            <div style="flex:1;min-width:180px;">
+                                <label style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:5px;">Summary
+                                    Type</label>
+                                <select id="summarize-type" class="glass-select" style="width:100%;">
+                                    <option value="brief">Brief Summary</option>
+                                    <option value="detailed" selected>Detailed Summary</option>
+                                    <option value="bullets">Bullet Points</option>
+                                    <option value="insights">Key Insights</option>
+                                    <option value="qa">Q&amp;A Format</option>
+                                </select>
+                            </div>
+                            <div style="flex:1;min-width:140px;">
+                                <label
+                                    style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:5px;">Language</label>
+                                <select id="summarize-lang" class="glass-select" style="width:100%;">
+                                    <option value="English" selected>English</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="Spanish">Spanish</option>
+                                    <option value="French">French</option>
+                                    <option value="German">German</option>
+                                    <option value="Arabic">Arabic</option>
+                                    <option value="Chinese">Chinese (Simplified)</option>
+                                    <option value="Japanese">Japanese</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="summarize-spinner" class="spinner hidden" style="margin:10px auto;"></div>
+                        <div id="summarize-status"
+                            style="display:none;color:#a5b4fc;font-size:0.9rem;margin-bottom:10px;text-align:center;">
+                        </div>
+                        <button id="btn-process-summarize" class="glass-btn primary" style="width:100%;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Summarize Now
+                        </button>
+                    </div>
+
+                    <!-- Result Panel -->
+                    <div id="summarize-result" class="hidden glass-panel"
+                        style="padding:20px;width:100%;margin-top:15px;box-sizing:border-box;">
+                        <div
+                            style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap;">
+                            <h4 style="margin:0;color:#a78bfa;"><i class="fa-solid fa-sparkles"></i> AI Summary</h4>
+                            <div style="display:flex;gap:8px;">
+                                <button id="btn-copy-summary" class="glass-btn secondary small"><i
+                                        class="fa-solid fa-copy"></i> Copy</button>
+                                <button id="btn-download-summary" class="glass-btn secondary small"><i
+                                        class="fa-solid fa-download"></i> Save .txt</button>
+                                <button id="btn-new-summarize" class="glass-btn secondary small"><i
+                                        class="fa-solid fa-rotate-left"></i> New</button>
+                            </div>
+                        </div>
+                        <div id="summarize-output"
+                            style="background:rgba(0,0,0,0.3);border-radius:10px;padding:16px;max-height:450px;overflow-y:auto;color:#e2e8f0;font-size:0.92rem;line-height:1.7;white-space:pre-wrap;word-break:break-word;">
+                        </div>
+                    </div>
+
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PDF TO PPT SECTION -->
+            <section id="pdf-ppt-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF to PowerPoint</h2>
+                    <div class="upload-zone" id="pdf-ppt-drop-zone">
+                        <i class="fa-solid fa-file-powerpoint"></i>
+                        <p>Drop PDF to Convert</p>
+                        <input type="file" id="pdf-ppt-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PDF TO WORD SECTION -->
+            <section id="pdf-word-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF to Word</h2>
+                    <div class="upload-zone" id="pdf-word-drop-zone">
+                        <i class="fa-solid fa-file-word"></i>
+                        <p>Drop PDF to Convert</p>
+                        <input type="file" id="pdf-word-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PDF TO WRITER SECTION -->
+            <section id="pdf-writer-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF to LibreOffice Writer</h2>
+                    <div class="upload-zone" id="pdf-writer-drop-zone">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <p>Drop PDF to Convert</p>
+                        <input type="file" id="pdf-writer-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- SECURITY SECTION -->
+            <section id="security-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF Security & Privacy</h2>
+                    <div class="upload-zone" id="sec-drop-zone">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <p>Drop PDF to Protect/Unlock</p>
+                        <input type="file" id="sec-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="sec-options" class="hidden glass-panel" style="width:100%;max-width:400px;padding:20px;">
+                        <h4 style="margin-bottom:15px;">Choose Action</h4>
+                        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px;">
+                            <button id="btn-mode-protect" class="glass-btn primary small">Protect</button>
+                            <button id="btn-mode-unlock" class="glass-btn secondary small">Unlock</button>
+                            <button id="btn-mode-perms" class="glass-btn secondary small">Restrict</button>
+                        </div>
+                        <div id="sec-inputs">
+                            <input type="password" id="sec-password" class="glass-input" placeholder="Enter Password"
+                                style="width:100%;padding:10px;margin-bottom:10px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:8px;">
+                        </div>
+                        <button id="btn-process-security" class="glass-btn primary" style="width:100%;">Process
+                            PDF</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- COMPRESS SECTION -->
+            <section id="compress-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>Compress PDF</h2>
+                    <div class="upload-zone" id="compress-drop-zone">
+                        <i class="fa-solid fa-file-zipper"></i>
+                        <p>Drop PDF to Compress</p>
+                        <input type="file" id="compress-upload-input" accept=".pdf" hidden>
+                    </div>
+
+                    <div id="compress-options" class="hidden glass-panel" style="padding:20px;">
+                        <div id="comp-file-info" class="file-info-bar" style="display:none;"></div>
+                        <span id="compress-mode-text"
+                            style="display:none;color:#a5b4fc;font-size:0.9rem;margin-bottom:10px;">Compressing...</span>
+                        <div id="compress-spinner" class="spinner hidden" style="margin:10px auto;"></div>
+
+                        <h4>Compression Level</h4>
+                        <div style="display:flex;gap:10px;margin:10px 0 20px 0;">
+                            <button class="glass-btn secondary small" data-level="screen">Low (72dpi)</button>
+                            <button class="glass-btn primary small" data-level="ebook">Medium (150dpi)</button>
+                            <button class="glass-btn secondary small" data-level="printer">High (300dpi)</button>
+                        </div>
+
+                        <div class="divider" style="margin:15px 0;background:rgba(255,255,255,0.1);height:1px;"></div>
+
+                        <h4>Target File Size (Optional)</h4>
+                        <div style="display:flex;gap:10px;margin:10px 0;">
+                            <input type="number" id="comp-target-val" placeholder="Size" class="glass-input"
+                                style="width:70%;">
+                            <select id="comp-target-unit" class="glass-select" style="width:30%;">
+                                <option value="KB">KB</option>
+                                <option value="MB" selected>MB</option>
+                            </select>
+                        </div>
+
+                        <div class="divider" style="margin:15px 0;background:rgba(255,255,255,0.1);height:1px;"></div>
+
+                        <h4>Resize Page (Optional)</h4>
+                        <div style="display:flex;gap:10px;margin:10px 0;align-items:center;">
+                            <input type="number" id="comp-resize-w" placeholder="Width" class="glass-input"
+                                style="width:35%;">
+                            <span style="color:white;">×</span>
+                            <input type="number" id="comp-resize-h" placeholder="Height" class="glass-input"
+                                style="width:35%;">
+                            <select id="comp-resize-unit" class="glass-select" style="width:30%;">
+                                <option value="mm">mm</option>
+                                <option value="cm">cm</option>
+                                <option value="in">in</option>
+                            </select>
+                        </div>
+
+                        <button id="btn-process-compress" class="glass-btn primary"
+                            style="width:100%;margin-top:15px;">Compress Now</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- CONVERT SECTION -->
+            <section id="convert-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>File Converter</h2>
+                    <div class="upload-zone" id="convert-drop-zone">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        <p>Drop PDF or Image</p>
+                        <input type="file" id="convert-upload-input" accept=".pdf,image/png,image/jpeg" hidden>
+                    </div>
+                    <div id="convert-options" class="hidden glass-panel" style="padding:20px;">
+                        <span id="convert-mode-text">Converting...</span>
+                        <div id="convert-spinner" class="spinner hidden"></div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- SPLIT PDF SECTION (NEW) -->
+            <section id="split-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>Split PDF</h2>
+                    <div class="upload-zone" id="split-drop-zone">
+                        <i class="fa-solid fa-scissors"></i>
+                        <p>Drop PDF to Split</p>
+                        <input type="file" id="split-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="split-options" class="hidden glass-panel" style="padding:20px;width:100%;max-width:400px;">
+                        <p id="split-page-count" style="color:#a5b4fc;margin-bottom:15px;"></p>
+                        <h4>Split Mode</h4>
+                        <select id="split-mode" class="glass-select" style="width:100%;margin:10px 0;">
+                            <option value="extract">Extract specific pages</option>
+                            <option value="individual">Split into individual pages (ZIP)</option>
+                        </select>
+                        <h4 style="margin-top:15px;">Page Range</h4>
+                        <input type="text" id="split-range" class="glass-input"
+                            placeholder="e.g. 1,3,5-8 (leave blank for all)"
+                            style="width:100%;padding:10px;margin:10px 0;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:8px;">
+                        <button id="btn-process-split" class="glass-btn primary"
+                            style="width:100%;margin-top:10px;">Split Now</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- ROTATE PDF SECTION (NEW) -->
+            <section id="rotate-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>Rotate PDF</h2>
+                    <div class="upload-zone" id="rotate-drop-zone">
+                        <i class="fa-solid fa-rotate"></i>
+                        <p>Drop PDF to Rotate</p>
+                        <input type="file" id="rotate-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="rotate-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;max-width:400px;">
+                        <h4>Rotation Angle</h4>
+                        <div style="display:flex;gap:10px;margin:15px 0;justify-content:center;">
+                            <label class="rotate-option">
+                                <input type="radio" name="rotate-angle-radio" value="90" checked>
+                                <span class="rotate-btn"><i class="fa-solid fa-rotate-right"></i> 90°</span>
+                            </label>
+                            <label class="rotate-option">
+                                <input type="radio" name="rotate-angle-radio" value="180">
+                                <span class="rotate-btn"><i class="fa-solid fa-rotate"></i> 180°</span>
+                            </label>
+                            <label class="rotate-option">
+                                <input type="radio" name="rotate-angle-radio" value="270">
+                                <span class="rotate-btn"><i class="fa-solid fa-rotate-left"></i> 270°</span>
+                            </label>
+                        </div>
+                        <select id="rotate-angle" class="glass-select hidden" style="width:100%;margin:10px 0;">
+                            <option value="90">90° Clockwise</option>
+                            <option value="180">180°</option>
+                            <option value="270">270° (90° Counter-clockwise)</option>
+                        </select>
+                        <button id="btn-process-rotate" class="glass-btn primary"
+                            style="width:100%;margin-top:10px;">Rotate Now</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- WATERMARK SECTION (NEW) -->
+            <section id="watermark-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box" style="max-width:700px;">
+                    <h2><i class="fa-solid fa-droplet" style="color:#00e5ff;"></i> Add Watermark</h2>
+                    <div class="upload-zone" id="watermark-drop-zone">
+                        <i class="fa-solid fa-droplet"></i>
+                        <p>Drop PDF to Watermark</p>
+                        <input type="file" id="watermark-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="watermark-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;box-sizing:border-box;">
+                        <p id="watermark-file-name" style="color:#a5b4fc;font-size:0.85rem;margin-bottom:12px;"></p>
+
+                        <!-- Preview Area -->
+                        <div class="watermark-preview-container" style="margin-bottom:18px;">
+                            <h4 style="margin-bottom:8px;"><i class="fa-solid fa-eye" style="color:#00e5ff;"></i> Live
+                                Preview</h4>
+                            <div
+                                style="position:relative;background:rgba(0,0,0,0.25);border-radius:10px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:200px;">
+                                <canvas id="watermark-preview-canvas"
+                                    style="max-width:100%;max-height:350px;border-radius:8px;display:block;"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Controls Grid -->
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <!-- Watermark Text -->
+                            <div style="grid-column:1/-1;">
+                                <label
+                                    style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:4px;">Watermark
+                                    Text</label>
+                                <input type="text" id="watermark-text" class="glass-input"
+                                    placeholder="e.g. CONFIDENTIAL" value="CONFIDENTIAL"
+                                    style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:8px;box-sizing:border-box;">
+                            </div>
+
+                            <!-- Position -->
+                            <div>
+                                <label
+                                    style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:4px;">Position</label>
+                                <select id="watermark-position" class="glass-select" style="width:100%;">
+                                    <option value="center" selected>Center</option>
+                                    <option value="top-left">Top Left</option>
+                                    <option value="top-right">Top Right</option>
+                                    <option value="bottom-left">Bottom Left</option>
+                                    <option value="bottom-right">Bottom Right</option>
+                                    <option value="tiled">Tiled (Repeat)</option>
+                                </select>
+                            </div>
+
+                            <!-- Color -->
+                            <div>
+                                <label
+                                    style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:4px;">Color</label>
+                                <input type="color" id="watermark-color" value="#888888"
+                                    style="width:100%;height:36px;border:none;border-radius:8px;cursor:pointer;background:transparent;">
+                            </div>
+
+                            <!-- Font Size -->
+                            <div>
+                                <label style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:4px;">Font
+                                    Size: <span id="watermark-size-val" style="color:#e2e8f0;">50</span></label>
+                                <input type="range" id="watermark-size" min="12" max="120" value="50"
+                                    style="width:100%;">
+                            </div>
+
+                            <!-- Opacity -->
+                            <div>
+                                <label style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:4px;">Opacity:
+                                    <span id="watermark-opacity-val" style="color:#e2e8f0;">30%</span></label>
+                                <input type="range" id="watermark-opacity" min="5" max="80" value="30"
+                                    style="width:100%;">
+                            </div>
+
+                            <!-- Rotation -->
+                            <div style="grid-column:1/-1;">
+                                <label
+                                    style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:4px;">Rotation:
+                                    <span id="watermark-rotation-val" style="color:#e2e8f0;">-45°</span></label>
+                                <input type="range" id="watermark-rotation" min="-90" max="90" value="-45"
+                                    style="width:100%;">
+                            </div>
+                        </div>
+
+                        <button id="btn-process-watermark" class="glass-btn primary"
+                            style="width:100%;margin-top:18px;"><i class="fa-solid fa-check"></i> Add Watermark</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PAGE NUMBERS SECTION (NEW) -->
+            <section id="pagenums-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>Add Page Numbers</h2>
+                    <div class="upload-zone" id="pagenums-drop-zone">
+                        <i class="fa-solid fa-list-ol"></i>
+                        <p>Drop PDF to Add Numbers</p>
+                        <input type="file" id="pagenums-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="pagenums-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;max-width:400px;">
+                        <h4>Position</h4>
+                        <select id="pagenums-position" class="glass-select" style="width:100%;margin:10px 0;">
+                            <option value="bottom-center">Bottom Center</option>
+                            <option value="bottom-left">Bottom Left</option>
+                            <option value="bottom-right">Bottom Right</option>
+                            <option value="top-center">Top Center</option>
+                            <option value="top-left">Top Left</option>
+                            <option value="top-right">Top Right</option>
+                        </select>
+                        <h4 style="margin-top:10px;">Format</h4>
+                        <select id="pagenums-format" class="glass-select" style="width:100%;margin:10px 0;">
+                            <option value="num">1, 2, 3...</option>
+                            <option value="num-of">1 of 10, 2 of 10...</option>
+                            <option value="page-num">Page 1, Page 2...</option>
+                        </select>
+                        <button id="btn-process-pagenums" class="glass-btn primary"
+                            style="width:100%;margin-top:15px;">Add Page Numbers</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PDF TO EXCEL SECTION (NEW) -->
+            <section id="pdf-excel-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF to Excel (CSV)</h2>
+                    <div class="upload-zone" id="pdf-excel-drop-zone">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <p>Drop PDF with Tables</p>
+                        <input type="file" id="pdf-excel-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <p style="color:#a5b4fc;font-size:0.85rem;margin-top:10px;">Extracts text layout as CSV. Best for
+                        simple table PDFs.</p>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- REORDER PAGES SECTION -->
+            <section id="reorder-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>Reorder PDF Pages</h2>
+                    <div class="upload-zone" id="reorder-drop-zone">
+                        <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                        <p>Drop PDF to Reorder</p>
+                        <input type="file" id="reorder-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="reorder-preview" class="hidden" style="width:100%;max-width:700px;">
+                        <p style="color:#a5b4fc;font-size:0.85rem;margin-bottom:10px;">Drag pages to reorder them:</p>
+                        <div id="reorder-pages-grid" class="reorder-pages-grid"></div>
+                        <button id="btn-process-reorder" class="glass-btn primary"
+                            style="width:100%;margin-top:15px;">Save Reordered PDF</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PDF TO TEXT SECTION -->
+            <section id="pdf-text-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF to Text</h2>
+                    <div class="upload-zone" id="pdf-text-drop-zone">
+                        <i class="fa-solid fa-file-alt"></i>
+                        <p>Drop PDF to Extract Text</p>
+                        <input type="file" id="pdf-text-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <p style="color:#a5b4fc;font-size:0.85rem;margin-top:10px;">Extracts all text content and downloads
+                        as a .txt file.</p>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PDF METADATA SECTION -->
+            <section id="metadata-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF Metadata</h2>
+                    <div class="upload-zone" id="metadata-drop-zone">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <p>Drop PDF to View Properties</p>
+                        <input type="file" id="metadata-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="metadata-display" class="hidden"></div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- REDACT PDF SECTION -->
+            <section id="redact-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box" style="max-width:900px;">
+                    <h2>Redact PDF</h2>
+                    <p style="color:#a5b4fc;font-size:0.85rem;margin-bottom:15px;">Black out sensitive information
+                        permanently. Click and drag on the page to mark areas for redaction.</p>
+                    <div class="upload-zone" id="redact-drop-zone">
+                        <i class="fa-solid fa-marker"></i>
+                        <p>Drop PDF to Redact</p>
+                        <input type="file" id="redact-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="redact-workspace" class="hidden" style="width:100%;">
+                        <div id="redact-pages-container" class="redact-pages-container"></div>
+                        <div style="display:flex;gap:10px;margin-top:15px;justify-content:center;flex-wrap:wrap;">
+                            <button id="btn-undo-redact" class="glass-btn secondary"><i class="fa-solid fa-undo"></i>
+                                Undo Last</button>
+                            <button id="btn-clear-redacts" class="glass-btn secondary"><i class="fa-solid fa-trash"></i>
+                                Clear All</button>
+                            <button id="btn-process-redact" class="glass-btn primary"><i
+                                    class="fa-solid fa-download"></i> Apply & Download</button>
+                        </div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- COMPARE PDFs SECTION -->
+            <section id="compare-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box" style="max-width:1000px;">
+                    <h2>Compare PDFs</h2>
+                    <p style="color:#a5b4fc;font-size:0.85rem;margin-bottom:15px;">Upload two PDFs to see visual
+                        differences highlighted.</p>
+                    <div id="compare-upload-area" style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+                        <div class="upload-zone" id="compare-drop-zone-1" style="flex:1;min-width:200px;">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <p>Drop Original PDF</p>
+                            <input type="file" id="compare-upload-1" accept=".pdf" hidden>
+                            <span id="compare-name-1" class="file-badge hidden"></span>
+                        </div>
+                        <div class="upload-zone" id="compare-drop-zone-2" style="flex:1;min-width:200px;">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <p>Drop Modified PDF</p>
+                            <input type="file" id="compare-upload-2" accept=".pdf" hidden>
+                            <span id="compare-name-2" class="file-badge hidden"></span>
+                        </div>
+                    </div>
+                    <button id="btn-process-compare" class="glass-btn primary hidden" style="margin-top:15px;"><i
+                            class="fa-solid fa-code-compare"></i> Compare Now</button>
+                    <div id="compare-results" class="hidden" style="width:100%;margin-top:20px;">
+                        <div id="compare-page-nav"
+                            style="display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:15px;">
+                            <button id="compare-prev" class="glass-btn secondary small"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <span id="compare-page-info" style="color:#a5b4fc;"></span>
+                            <button id="compare-next" class="glass-btn secondary small"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="compare-side-by-side">
+                            <div class="compare-panel">
+                                <h4>Original</h4>
+                                <canvas id="compare-canvas-1"></canvas>
+                            </div>
+                            <div class="compare-panel">
+                                <h4>Modified</h4>
+                                <canvas id="compare-canvas-2"></canvas>
+                            </div>
+                            <div class="compare-panel">
+                                <h4>Differences</h4>
+                                <canvas id="compare-canvas-diff"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PDF TO MARKDOWN SECTION -->
+            <section id="pdf-markdown-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>PDF to Markdown</h2>
+                    <div class="upload-zone" id="pdf-markdown-drop-zone">
+                        <i class="fa-brands fa-markdown"></i>
+                        <p>Drop PDF to Convert to Markdown</p>
+                        <input type="file" id="pdf-markdown-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="pdf-markdown-preview" class="hidden" style="width:100%;max-width:700px;">
+                        <h4 style="margin-bottom:10px;">Preview</h4>
+                        <div id="pdf-markdown-output" class="markdown-preview-box"></div>
+                        <div style="display:flex;gap:10px;margin-top:15px;justify-content:center;">
+                            <button id="btn-copy-markdown" class="glass-btn secondary"><i class="fa-solid fa-copy"></i>
+                                Copy</button>
+                            <button id="btn-download-markdown" class="glass-btn primary"><i
+                                    class="fa-solid fa-download"></i> Download .md</button>
+                        </div>
+                    </div>
+                    <p style="color:#a5b4fc;font-size:0.85rem;margin-top:10px;">Extracts text with heading detection
+                        based on font sizes.</p>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- FORM FILLER SECTION -->
+            <section id="form-filler-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box" style="max-width:800px;">
+                    <h2>Fill PDF Form</h2>
+                    <div class="upload-zone" id="form-filler-drop-zone">
+                        <i class="fa-solid fa-pen-clip"></i>
+                        <p>Drop PDF with Form Fields</p>
+                        <input type="file" id="form-filler-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="form-filler-workspace" class="hidden" style="width:100%;">
+                        <p style="color:#a5b4fc;font-size:0.85rem;margin-bottom:15px;">Fill in the form fields below,
+                            then download the completed PDF.</p>
+                        <div id="form-fields-container" class="form-fields-container"></div>
+                        <div style="display:flex;gap:10px;margin-top:15px;justify-content:center;">
+                            <button id="btn-process-form" class="glass-btn primary"><i class="fa-solid fa-download"></i>
+                                Download Filled PDF</button>
+                        </div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- DELETE PAGES SECTION -->
+            <section id="delete-pages-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box" style="max-width:800px;">
+                    <h2>Delete Pages</h2>
+                    <div class="upload-zone" id="delete-pages-drop-zone">
+                        <i class="fa-solid fa-file-circle-minus"></i>
+                        <p>Drop PDF to Remove Pages</p>
+                        <input type="file" id="delete-pages-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="delete-pages-workspace" class="hidden" style="width:100%;">
+                        <p style="color:#a5b4fc;font-size:0.85rem;margin-bottom:15px;">Click on pages to select them for
+                            deletion (marked in red).</p>
+                        <div id="delete-pages-grid" class="delete-pages-grid"></div>
+                        <div style="display:flex;gap:10px;margin-top:15px;justify-content:center;align-items:center;">
+                            <span id="delete-count-info" style="color:#f87171;font-weight:600;"></span>
+                            <button id="btn-process-delete-pages" class="glass-btn primary"><i
+                                    class="fa-solid fa-download"></i> Save Without Selected</button>
+                        </div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- PAGE RESIZE SECTION -->
+            <section id="page-resize-section" class="glass-content full-width flex-center hidden">
+                <div class="center-box">
+                    <h2>Resize PDF Pages</h2>
+                    <div class="upload-zone" id="page-resize-drop-zone">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                        <p>Drop PDF to Resize Pages</p>
+                        <input type="file" id="page-resize-upload-input" accept=".pdf" hidden>
+                    </div>
+                    <div id="page-resize-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;max-width:400px;">
+                        <h4>Target Page Size</h4>
+                        <div class="resize-presets" style="display:flex;flex-wrap:wrap;gap:10px;margin:15px 0;">
+                            <button class="glass-btn secondary small resize-preset active" data-size="a4">A4
+                                (210×297mm)</button>
+                            <button class="glass-btn secondary small resize-preset" data-size="letter">US
+                                Letter</button>
+                            <button class="glass-btn secondary small resize-preset" data-size="legal">US Legal</button>
+                            <button class="glass-btn secondary small resize-preset" data-size="a3">A3</button>
+                            <button class="glass-btn secondary small resize-preset" data-size="a5">A5</button>
+                            <button class="glass-btn secondary small resize-preset" data-size="custom">Custom</button>
+                        </div>
+                        <div id="custom-size-inputs" class="hidden"
+                            style="display:flex;gap:10px;margin:10px 0;align-items:center;">
+                            <input type="number" id="resize-custom-w" placeholder="Width" class="glass-input"
+                                style="width:40%;">
+                            <span style="color:white;">×</span>
+                            <input type="number" id="resize-custom-h" placeholder="Height" class="glass-input"
+                                style="width:40%;">
+                            <select id="resize-custom-unit" class="glass-select" style="width:20%;">
+                                <option value="mm">mm</option>
+                                <option value="in">in</option>
+                            </select>
+                        </div>
+                        <div style="margin:10px 0;">
+                            <label style="color:#a5b4fc;font-size:0.85rem;display:flex;align-items:center;gap:8px;">
+                                <input type="checkbox" id="resize-keep-aspect" checked> Maintain aspect ratio (fit
+                                content)
+                            </label>
+                        </div>
+                        <button id="btn-process-resize" class="glass-btn primary"
+                            style="width:100%;margin-top:10px;">Resize Now</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-home" style="margin-top:20px;">Back to Home</button>
+                </div>
+            </section>
+
+            <!-- EDITOR WORKSPACE -->
+            <div id="editor-workspace" class="workspace-container hidden">
+                <div class="upload-zone" id="pdf-drop-zone">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Open PDF to Edit</p>
+                    <input type="file" id="pdf-upload-input" accept=".pdf" hidden>
+                </div>
+                <button id="btn-editor-home-initial" class="glass-btn secondary btn-back-home"
+                    style="margin-top:20px;">Back to Home</button>
+
+                <!-- Editor Body: Sidebar + PDF Preview -->
+                <div id="editor-body" class="editor-body hidden">
+                    <!-- Floating button to reopen sidebar when collapsed -->
+                    <button id="btn-open-sidebar" class="sidebar-open-btn hidden" title="Show Tools">
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                    <!-- Tools Sidebar -->
+                    <aside id="editor-tools-sidebar" class="editor-sidebar">
+                        <button class="sidebar-toggle" id="btn-toggle-sidebar" title="Collapse tools panel">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </button>
+
+
+
+                        <div class="sidebar-tools-list">
+                            <button class="sidebar-tool-btn" data-editor-tool="rotate" title="Rotate Pages">
+                                <i class="fa-solid fa-rotate-right"></i><span>Rotate</span>
+                            </button>
+                            <button class="sidebar-tool-btn" data-editor-tool="watermark" title="Add Watermark">
+                                <i class="fa-solid fa-droplet"></i><span>Watermark</span>
+                            </button>
+                            <button class="sidebar-tool-btn" data-editor-tool="compress" title="Compress PDF">
+                                <i class="fa-solid fa-compress"></i><span>Compress</span>
+                            </button>
+                            <button class="sidebar-tool-btn" data-editor-tool="pagenums" title="Add Page Numbers">
+                                <i class="fa-solid fa-list-ol"></i><span>Page #</span>
+                            </button>
+                            <button class="sidebar-tool-btn" data-editor-tool="resize" title="Resize Pages">
+                                <i class="fa-solid fa-expand"></i><span>Resize</span>
+                            </button>
+                            <button class="sidebar-tool-btn" data-editor-tool="redact-inline" title="Redact Content">
+                                <i class="fa-solid fa-eye-slash"></i><span>Redact</span>
+                            </button>
+                            <button class="sidebar-tool-btn" data-editor-tool="delete-inline" title="Delete Pages">
+                                <i class="fa-solid fa-file-circle-minus"></i><span>Delete Pg</span>
+                            </button>
+                            <button class="sidebar-tool-btn" data-editor-tool="extract-text" title="Extract Text">
+                                <i class="fa-solid fa-font"></i><span>Text</span>
+                            </button>
+                            <button class="sidebar-tool-btn" data-editor-tool="metadata-inline" title="View Metadata">
+                                <i class="fa-solid fa-circle-info"></i><span>Info</span>
+                            </button>
+                        </div>
+
+
+                    </aside>
+
+                    <!-- PDF Preview Area -->
+                    <div id="pdf-zoom-wrapper">
+                        <div id="pdf-main-container" class="pdf-scroll-view"></div>
+                    </div>
+                </div>
+
+                <!-- Floating Tool Settings Panel -->
+                <div id="editor-tool-panel" class="editor-tool-panel glass-panel hidden">
+                    <div class="tool-panel-header">
+                        <h3 id="tool-panel-title">Tool Settings</h3>
+                        <button class="glass-btn icon-only" id="btn-close-tool-panel" title="Close"><i
+                                class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="tool-panel-body" id="tool-panel-body">
+                        <!-- Dynamic content per tool -->
+                    </div>
+                    <div class="tool-panel-footer">
+                        <button class="glass-btn primary" id="btn-apply-tool-action"><i class="fa-solid fa-check"></i>
+                            Apply</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Sidebar -->
+            <div id="ai-sidebar" class="ai-sidebar hidden">
+                <div class="sidebar-header">
+                    <h3><i class="fa-solid fa-wand-magic-sparkles"></i> AI Summary</h3>
+                    <button class="glass-btn icon-only" id="close-sidebar"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="sidebar-content" id="ai-content-area">
+                    <p class="placeholder-text">Upload a PDF to see the summary here.</p>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <p><i class="fa-solid fa-shield-halved"></i> Your files are processed locally in your browser. Nothing
+                    is uploaded to any server.</p>
+                <p>Developed by Atul || PDF Editor Web App</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ===== NAVBAR MODALS ===== -->
+
+    <!-- About Modal -->
+    <div id="modal-about" class="modal-overlay hidden" style="z-index:10000;">
+        <div class="glass-panel modal-content" style="max-width:500px;">
+            <button class="modal-close-x"
+                onclick="document.getElementById('modal-about').classList.add('hidden');">&#x2715;</button>
+            <div style="text-align:center;margin-bottom:20px;">
+                <div style="font-size:3rem;">&#x1F4C4;</div>
+                <h3 style="font-size:1.5rem;">About EdityourPDF</h3>
+            </div>
+            <p style="color:#a5b4fc;line-height:1.8;">EdityourPDF is a free collection of PDF and Image tools that run
+                entirely in your browser. No sign-up, no uploads, no data tracking.</p>
+            <ul style="color:#e0e0e0;margin:15px 0;padding-left:20px;line-height:2;">
+                <li>&#x2705; 25+ PDF tools</li>
+                <li>&#x2705; 9 Image editor tools</li>
+                <li>&#x2705; Mobile &amp; desktop friendly</li>
+                <li>&#x2705; 100% client-side processing</li>
+            </ul>
+            <p style="color:#a5b4fc;font-size:0.85rem;">Version 2.0 &nbsp;&bull;&nbsp; &copy; 2026 EdityourPDF</p>
+            <button id="close-modal-about" class="glass-btn primary" style="width:100%;margin-top:15px;"
+                onclick="document.getElementById('modal-about').classList.add('hidden');">Close</button>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="modal-help" class="modal-overlay hidden" style="z-index:10000;">
+        <div class="glass-panel modal-content" style="max-width:550px;max-height:85vh;overflow-y:auto;">
+            <button id="close-modal-help" class="modal-close-x"
+                onclick="document.getElementById('modal-help').classList.add('hidden');">&#x2715;</button>
+            <h3 style="margin-bottom:15px;"><i class="fa-solid fa-circle-question" style="color:#00e5ff;"></i> Help
+                &amp; FAQ</h3>
+            <div class="help-faq">
+                <div class="faq-item"><strong>How do I compress an image to a specific size?</strong>
+                    <p>Go to Image Editor &rarr; Compress Image. Enter your target size in KB or MB and click Compress
+                        Now.</p>
+                </div>
+                <div class="faq-item"><strong>Are my files uploaded to a server?</strong>
+                    <p>No. All processing happens in your browser. Nothing leaves your device.</p>
+                </div>
+                <div class="faq-item"><strong>Which image formats are supported?</strong>
+                    <p>JPG, PNG, WebP, BMP, GIF. Output formats: JPG, PNG, WebP, BMP.</p>
+                </div>
+                <div class="faq-item"><strong>Tool not working on mobile?</strong>
+                    <p>Use a modern browser (Chrome, Firefox, Safari). All tools are touch-optimized.</p>
+                </div>
+                <div class="faq-item"><strong>How do I remove background from an image?</strong>
+                    <p>Use Image Editor &rarr; Remove Background. Pick the BG color, adjust tolerance (40 works well for
+                        white BGs), and download the transparent PNG.</p>
+                </div>
+                <div class="faq-item"><strong>Can I edit PDFs?</strong>
+                    <p>Yes! Use the PDF Editor tool to add text, images, erase content, crop, and sign documents.</p>
+                </div>
+            </div>
+            <button class="glass-btn primary" style="width:100%;margin-top:15px;"
+                onclick="document.getElementById('modal-help').classList.add('hidden');">Got it!</button>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="modal-feedback" class="modal-overlay hidden" style="z-index:10000;">
+        <div class="glass-panel modal-content" style="max-width:480px;">
+            <button id="close-modal-feedback" class="modal-close-x"
+                onclick="document.getElementById('modal-feedback').classList.add('hidden');">&#x2715;</button>
+            <h3 style="margin-bottom:15px;"><i class="fa-solid fa-comment-dots" style="color:#00e5ff;"></i> Send
+                Feedback</h3>
+            <div class="star-rating" style="margin:10px 0 20px;">
+                <span class="star" data-val="1">&#9733;</span><span class="star" data-val="2">&#9733;</span>
+                <span class="star" data-val="3">&#9733;</span><span class="star" data-val="4">&#9733;</span>
+                <span class="star" data-val="5">&#9733;</span>
+            </div>
+            <input type="text" id="feedback-name" class="glass-input" placeholder="Your name (optional)"
+                style="width:100%;margin-bottom:10px;">
+            <textarea id="feedback-message" class="glass-input" placeholder="Tell us what you think..." rows="4"
+                style="width:100%;resize:vertical;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:8px;padding:10px;font-family:inherit;"></textarea>
+            <button id="btn-send-feedback" class="glass-btn primary" style="width:100%;margin-top:15px;"><i
+                    class="fa-solid fa-paper-plane"></i> Send Feedback</button>
+        </div>
+    </div>
+
+    <!-- Donate Modal -->
+    <div id="modal-donate" class="modal-overlay hidden" style="z-index:10000;">
+        <div class="glass-panel modal-content" style="max-width:480px;text-align:center;">
+            <button id="close-modal-donate" class="modal-close-x"
+                onclick="document.getElementById('modal-donate').classList.add('hidden');">&#x2715;</button>
+            <div style="font-size:3rem;">&#x2764;&#xFE0F;</div>
+            <h3 style="margin:10px 0;">Support EdityourPDF</h3>
+            <p style="color:#a5b4fc;line-height:1.8;">All tools are completely free. If EdityourPDF saved your time,
+                consider a small donation to keep it alive and growing!</p>
+            <div class="donate-options">
+                <a href="https://www.buymeacoffee.com" target="_blank" class="donate-btn"><i
+                        class="fa-solid fa-mug-hot"></i> Buy Me a Coffee</a>
+                <a href="https://paypal.me" target="_blank" class="donate-btn"><i class="fa-brands fa-paypal"></i>
+                    PayPal</a>
+                <a href="#" class="donate-btn"><i class="fa-solid fa-qrcode"></i> UPI (India)</a>
+            </div>
+            <p style="color:#a5b4fc;font-size:0.8rem;margin-top:15px;">Thank you for your support! &#x1F64F;</p>
+            <button class="glass-btn secondary" style="width:100%;margin-top:10px;"
+                onclick="document.getElementById('modal-donate').classList.add('hidden');">Close</button>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Progress Modal -->
+    <div id="progress-modal" class="modal-overlay hidden">
+        <div class="glass-panel modal-content">
+            <div class="spinner"></div>
+            <h3 id="progress-text" style="margin-top:20px;">Processing...</h3>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal-overlay hidden">
+        <div class="glass-panel modal-content">
+            <div style="font-size:3rem;color:#00e5ff;margin-bottom:10px;">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3>Success!</h3>
+            <p>Your file is ready.</p>
+            <div id="success-filename" class="file-badge">document.pdf</div>
+            <div id="success-size-info" class="compress-stats-container" style="display:none;"></div>
+            <div class="modal-actions">
+                <button id="btn-download-final" class="glass-btn primary large-btn">
+                    <i class="fa-solid fa-download"></i> Download Now
+                </button>
+                <button id="btn-close-modal" class="glass-btn secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signature Modal -->
+    <div id="signature-modal" class="modal-overlay hidden">
+        <div class="glass-panel modal-content" style="max-width:600px;">
+            <h3>Create Signature</h3>
+            <div style="display:flex;gap:10px;margin-bottom:10px;">
+                <button id="tab-draw" class="glass-btn primary small">Draw</button>
+                <button id="tab-type" class="glass-btn secondary small">Type</button>
+                <button id="tab-upload" class="glass-btn secondary small">Upload</button>
+            </div>
+            <div id="sig-draw-area" style="background:white;border-radius:8px;cursor:crosshair;">
+                <canvas id="signature-canvas" width="500" height="200" style="touch-action:none;"></canvas>
+            </div>
+            <div id="sig-type-area" class="hidden">
+                <input type="text" id="sig-type-input" placeholder="Type your name here...">
+                <div id="sig-type-preview" style="font-family:'Dancing Script',cursive;"></div>
+            </div>
+            <div id="sig-upload-area" class="hidden" style="width:100%;padding:20px;">
+                <input type="file" id="sig-upload-input" accept="image/png" class="glass-input">
+            </div>
+            <div class="modal-actions">
+                <button id="btn-clear-sig" class="glass-btn danger">Clear</button>
+                <button id="btn-save-sig" class="glass-btn primary">Use Signature</button>
+                <button id="btn-close-sig" class="glass-btn secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bottom Toolbar (outside all animated containers for position:fixed) -->
+    <div id="bottom-toolbar" class="bottom-toolbar glass-panel hidden">
+        <div class="toolbar-section main-tools">
+            <button class="tool-btn active" data-tool="cursor" title="Select/Move">
+                <i class="fa-solid fa-arrow-pointer"></i> <span>Select</span>
+            </button>
+            <button class="tool-btn" data-tool="text" title="Add Text">
+                <i class="fa-solid fa-font"></i> <span>Text</span>
+            </button>
+            <button class="tool-btn" data-tool="image" title="Add Image">
+                <i class="fa-regular fa-image"></i> <span>Image</span>
+            </button>
+            <button class="tool-btn" data-tool="whiteout" title="Eraser / Whiteout">
+                <i class="fa-solid fa-eraser"></i> <span>Draw</span>
+            </button>
+            <button class="tool-btn" data-tool="crop" title="Edge Crop">
+                <i class="fa-solid fa-crop-simple"></i> <span>Crop</span>
+            </button>
+            <button class="tool-btn" data-tool="signature" title="Sign Document">
+                <i class="fa-solid fa-signature"></i> <span>Sign</span>
+            </button>
+            <div class="vertical-sep desktop-only"></div>
+            <button class="tool-btn desktop-only" id="tool-insert-above" title="Insert Blank Page Above">
+                <i class="fa-solid fa-file-arrow-up"></i>
+            </button>
+            <button class="tool-btn desktop-only" id="tool-insert-below" title="Insert Blank Page Below">
+                <i class="fa-solid fa-file-arrow-down"></i>
+            </button>
+            <button class="tool-btn danger-text desktop-only" id="tool-delete-page" title="Delete Selected Page">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+            <button class="tool-btn mobile-only" id="mob-bar-apply" title="Apply Changes">
+                <i class="fa-solid fa-eye"></i> <span>Apply</span>
+            </button>
+            <button class="tool-btn mobile-only" id="mob-bar-download" title="Download">
+                <i class="fa-solid fa-download"></i> <span>Download</span>
+            </button>
+            <div class="vertical-sep mobile-only"></div>
+            <button class="tool-btn mobile-only" id="btn-mobile-more" title="More Tools">
+                <i class="fa-solid fa-ellipsis"></i> <span>More</span>
+            </button>
+        </div>
+        <div class="divider"></div>
+        <div class="toolbar-section zoom-section">
+            <button class="glass-btn icon-only" id="btn-zoom-out" title="Zoom Out"><i
+                    class="fa-solid fa-magnifying-glass-minus"></i></button>
+            <span id="zoom-level-display">100%</span>
+            <button class="glass-btn icon-only" id="btn-zoom-in" title="Zoom In"><i
+                    class="fa-solid fa-magnifying-glass-plus"></i></button>
+        </div>
+        <div class="divider"></div>
+        <div class="toolbar-section text-options hidden" id="text-options">
+            <input type="color" id="text-color" value="#000000">
+            <select id="font-family" class="glass-select">
+                <optgroup label="Standard Fonts">
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Times-Roman">Times Roman</option>
+                    <option value="Courier">Courier</option>
+                </optgroup>
+                <optgroup label="Google Fonts">
+                    <option value="Outfit">Outfit</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Dancing Script">Dancing Script</option>
+                    <option value="Inter">Inter</option>
+                    <option value="Roboto">Roboto</option>
+                    <option value="Open Sans">Open Sans</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Lato">Lato</option>
+                    <option value="Raleway">Raleway</option>
+                    <option value="Playfair Display">Playfair Display</option>
+                    <option value="Merriweather">Merriweather</option>
+                </optgroup>
+                <optgroup label="System Fonts">
+                    <option value="Arial">Arial</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Tahoma">Tahoma</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                    <option value="Impact">Impact</option>
+                    <option value="Comic Sans MS">Comic Sans MS</option>
+                    <option value="Lucida Console">Lucida Console</option>
+                    <option value="Brush Script MT">Brush Script MT</option>
+                </optgroup>
+            </select>
+            <button id="btn-text-bold" class="tool-btn" title="Bold"
+                style="padding:5px 10px;font-size:0.9rem;font-weight:900;">B</button>
+            <button id="btn-text-italic" class="tool-btn" title="Italic"
+                style="padding:5px 10px;font-size:0.9rem;font-style:italic;">I</button>
+            <button id="btn-text-underline" class="tool-btn" title="Underline"
+                style="padding:5px 10px;font-size:0.9rem;text-decoration:underline;">U</button>
+            <input type="range" id="font-size" min="8" max="120" value="16">
+            <span id="font-size-val">16px</span>
+        </div>
+        <div class="toolbar-section save-section">
+            <button class="glass-btn secondary btn-back-home" title="Back to Home">
+                <i class="fa-solid fa-house"></i>
+            </button>
+            <button class="glass-btn secondary" id="btn-apply-changes" title="Apply changes">
+                <i class="fa-solid fa-eye"></i> Apply
+            </button>
+            <button class="glass-btn primary" id="btn-download-pdf" title="Download Final PDF">
+                <i class="fa-solid fa-download"></i> Download
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile "More Tools" Grid Popup (hidden by default via opacity) -->
+    <div id="mobile-more-menu" class="mobile-more-menu glass-panel">
+        <div class="more-menu-grid">
+            <button class="more-grid-item" data-editor-tool="rotate">
+                <div class="icon-wrap color-rotate"><i class="fa-solid fa-rotate-right"></i></div>
+                <span>Rotate</span>
+            </button>
+            <button class="more-grid-item" data-editor-tool="compress">
+                <div class="icon-wrap color-compress"><i class="fa-solid fa-compress"></i></div>
+                <span>Compress</span>
+            </button>
+            <button class="more-grid-item" data-editor-tool="pagenums">
+                <div class="icon-wrap color-pagenums"><i class="fa-solid fa-list-ol"></i></div>
+                <span>Page #</span>
+            </button>
+            <button class="more-grid-item" data-editor-tool="resize">
+                <div class="icon-wrap color-resize"><i class="fa-solid fa-expand"></i></div>
+                <span>Resize</span>
+            </button>
+            <button class="more-grid-item" data-editor-tool="redact-inline">
+                <div class="icon-wrap color-redact"><i class="fa-solid fa-eye-slash"></i></div>
+                <span>Redact</span>
+            </button>
+            <button class="more-grid-item" data-editor-tool="delete-inline">
+                <div class="icon-wrap color-delete"><i class="fa-solid fa-file-circle-minus"></i></div>
+                <span>Del Pages</span>
+            </button>
+            <button class="more-grid-item" data-editor-tool="extract-text">
+                <div class="icon-wrap color-extract"><i class="fa-solid fa-font"></i></div>
+                <span>Extract Text</span>
+            </button>
+            <button class="more-grid-item" data-editor-tool="watermark">
+                <div class="icon-wrap color-watermark"><i class="fa-solid fa-droplet"></i></div>
+                <span>Watermark</span>
+            </button>
+            <button class="more-grid-item" data-editor-tool="metadata-inline">
+                <div class="icon-wrap color-info"><i class="fa-solid fa-circle-info"></i></div>
+                <span>Info</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js?v=4"></script>
+    <script src="advanced-tools.js?v=7"></script>
+    <script src="pdf-manager.js?v=9"></script>
+    <script src="image-tools.js?v=3"></script>
+
+    <!-- Rotate radio sync -->
+    <script>
+        document.querySelectorAll('input[name="rotate-angle-radio"]').forEach(r => {
+            r.addEventListener('change', () => {
+                document.getElementById('rotate-angle').value = r.value;
+            });
+        });
+    </script>
+
+    <!-- Mobile Bottom Toolbar & More Menu Wiring -->
+    <script>
+        (function () {
+            const btnMore = document.getElementById('btn-mobile-more');
+            const moreMenu = document.getElementById('mobile-more-menu');
+
+            if (btnMore && moreMenu) {
+                // Toggle "More" menu
+                btnMore.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    moreMenu.classList.toggle('show');
+                    btnMore.classList.toggle('active');
+                });
+
+                // Close menu if user clicks outside of it
+                document.addEventListener('click', (e) => {
+                    if (moreMenu.classList.contains('show') && !moreMenu.contains(e.target) && !btnMore.contains(e.target)) {
+                        moreMenu.classList.remove('show');
+                        btnMore.classList.remove('active');
+                    }
+                });
+
+                // Prevent closing when clicking inside the menu itself
+                moreMenu.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+
+                // Wire up all grid items to trigger their desktop sidebar counterparts
+                const gridItems = moreMenu.querySelectorAll('.more-grid-item[data-editor-tool]');
+                gridItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const toolName = item.dataset.editorTool;
+                        if (toolName) {
+                            const desktopBtn = document.querySelector(`.sidebar-tool-btn[data-editor-tool="${toolName}"]`);
+                            if (desktopBtn) {
+                                desktopBtn.click();
+                            }
+                        }
+
+                        // Close menu after clicking a tool
+                        moreMenu.classList.remove('show');
+                        btnMore.classList.remove('active');
+                    });
+                });
+
+                // Wire up Apply and Download
+                const mobApply = document.getElementById('mob-bar-apply');
+                const mobDownload = document.getElementById('mob-bar-download');
+                if (mobApply) {
+                    mobApply.addEventListener('click', () => {
+                        document.getElementById('btn-apply-changes')?.click();
+                        moreMenu.classList.remove('show');
+                        btnMore.classList.remove('active');
+                    });
+                }
+                if (mobDownload) {
+                    mobDownload.addEventListener('click', () => {
+                        document.getElementById('btn-download-pdf')?.click();
+                        moreMenu.classList.remove('show');
+                        btnMore.classList.remove('active');
+                    });
+                }
+            }
+        })();
+    </script>
+
+
+
+    <!-- Support Dropdown Wiring -->
+    <script>
+        (function () {
+            const supportBtn = document.getElementById('nav-support-btn');
+            const supportDropdown = document.getElementById('nav-support-dropdown');
+            if (supportBtn && supportDropdown) {
+                supportBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    supportDropdown.classList.toggle('open');
+                });
+                document.addEventListener('click', function () {
+                    supportDropdown.classList.remove('open');
+                });
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
