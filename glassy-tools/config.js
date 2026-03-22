@@ -8,7 +8,7 @@ const CONFIG = {
 
     // ── Hyperreal AI (used for: Image Generation features) ──
     // Get your API key from: https://hyperreal.tech
-    HYPERREAL_API_KEY: "ck_6e4b44be40b09c753ed70b4b163c912981890928b9eb89cf2c481254b6e41e8e",
+    HYPERREAL_API_KEY: "YOUR API KEY HERE",
 
     // ── OpenAI (reserved for future features) ──
     OPENAI_API_KEY: "YOUR_OPENAI_API_KEY_HERE"
