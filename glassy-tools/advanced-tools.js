@@ -231,7 +231,6 @@ async function processSecurity() {
 })();
 
 let compFile = null;
-let compLevel = 'ebook';
 
 function setupCompress() {
     const card = document.getElementById('card-compress');
@@ -245,13 +244,6 @@ function setupCompress() {
         drop.addEventListener('drop', (e) => { e.preventDefault(); handleCompFile(e.dataTransfer.files[0]); });
         inp.addEventListener('change', (e) => handleCompFile(e.target.files[0]));
 
-        document.querySelectorAll('#compress-options button[data-level]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                compLevel = e.target.dataset.level;
-                document.querySelectorAll('#compress-options button[data-level]').forEach(b => { b.classList.remove('primary'); b.classList.add('secondary'); });
-                e.target.classList.remove('secondary'); e.target.classList.add('primary');
-            });
-        });
         document.getElementById('btn-process-compress').addEventListener('click', processCompress);
     }
 }
@@ -259,7 +251,6 @@ function setupCompress() {
 function handleCompFile(file) {
     if (!file || file.type !== 'application/pdf') return showToast('Please upload a PDF file.', 'warning');
     compFile = file;
-    // Show original file size
     const sizeStr = formatFileSize(file.size);
     const fileInfo = document.getElementById('comp-file-info');
     if (fileInfo) {
@@ -292,27 +283,21 @@ async function processCompress() {
     const originalSize = compFile.size;
 
     // Helper: compress all pages at a given quality+scale and return pdf bytes
-    async function compressAtQuality(pdfDoc, totalPages, quality, scale, targetWPoints, targetHPoints) {
+    async function compressAtSettings(pdfDoc, totalPages, quality, scale) {
         const newPdf = await PDFLib.PDFDocument.create();
         for (let i = 1; i <= totalPages; i++) {
-            updateStatus(`Compressing page ${i}/${totalPages}  (quality ${Math.round(quality * 100)}%)…`);
+            updateStatus(`Compressing page ${i}/${totalPages} (Q:${Math.round(quality * 100)}% S:${Math.round(scale * 100)}%)…`);
             const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale });
+            const origVP = page.getViewport({ scale: 1.0 });
+            const renderVP = page.getViewport({ scale: scale });
             const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+            canvas.width = renderVP.width;
+            canvas.height = renderVP.height;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: renderVP }).promise;
             const imgData = canvas.toDataURL('image/jpeg', quality);
             const imgEmbed = await newPdf.embedJpg(imgData);
-            let newPage;
-            if (targetWPoints > 0 && targetHPoints > 0) {
-                newPage = newPdf.addPage([targetWPoints, targetHPoints]);
-                newPage.drawImage(imgEmbed, { x: 0, y: 0, width: targetWPoints, height: targetHPoints });
-            } else {
-                const origVP = page.getViewport({ scale: 1.0 });
-                newPage = newPdf.addPage([origVP.width, origVP.height]);
-                newPage.drawImage(imgEmbed, { x: 0, y: 0, width: newPage.getWidth(), height: newPage.getHeight() });
-            }
+            const newPage = newPdf.addPage([origVP.width, origVP.height]);
+            newPage.drawImage(imgEmbed, { x: 0, y: 0, width: origVP.width, height: origVP.height });
         }
         return await newPdf.save();
     }
@@ -331,95 +316,106 @@ async function processCompress() {
             else if (targetUnit === 'MB') targetBytes = targetVal * 1024 * 1024;
         }
 
-        // Get optional page resize dimensions
-        const resizeW = parseFloat(document.getElementById('comp-resize-w').value);
-        const resizeH = parseFloat(document.getElementById('comp-resize-h').value);
-        const resizeUnit = document.getElementById('comp-resize-unit').value;
-        let targetWPoints = 0, targetHPoints = 0;
-        if (resizeW > 0 && resizeH > 0) {
-            const factor = (resizeUnit === 'mm') ? 2.835 : (resizeUnit === 'cm') ? 28.35 : 72;
-            targetWPoints = resizeW * factor;
-            targetHPoints = resizeH * factor;
-        }
-
         let pdfBytes;
-        let reachedTarget = true;
 
         if (targetBytes <= 0) {
-            // ── No target: use fixed quality/scale by compression level ──
-            let scale, quality;
-            if (compLevel === 'screen') { scale = 0.5; quality = 0.25; }
-            else if (compLevel === 'ebook') { scale = 0.72; quality = 0.50; }
-            else /* printer */ { scale = 1.0; quality = 0.78; }
-            updateStatus(`Compressing at ${compLevel} quality…`);
-            pdfBytes = await compressAtQuality(pdfDoc, totalPages, quality, scale, targetWPoints, targetHPoints);
+            // No target specified — smart auto-compress at moderate quality
+            updateStatus('Smart compressing…');
+            pdfBytes = await compressAtSettings(pdfDoc, totalPages, 0.6, 1.0);
 
         } else {
-            // ── Target size: binary search over JPEG quality ──
-            updateStatus(`Calibrating compression…`);
+            // --- Target-based compression with independent quality/scale search ---
 
-            // Step 1 – quick calibration on page 1 at quality=0.5 to estimate scale of compression
-            const calibPage = await pdfDoc.getPage(1);
-            const calibVP = calibPage.getViewport({ scale: 1.0 });
-            const calibCanvas = document.createElement('canvas');
-            calibCanvas.width = calibVP.width;
-            calibCanvas.height = calibVP.height;
-            await calibPage.render({ canvasContext: calibCanvas.getContext('2d'), viewport: calibVP }).promise;
-            const calibData = calibCanvas.toDataURL('image/jpeg', 0.5);
-            // Estimate full-doc size at quality=0.5 (rough, for initial bounds)
-            const estimatedPerPage = calibData.length * 0.75; // base64 → raw bytes approx
-            const estimatedTotal = estimatedPerPage * totalPages;
-
-            // Decide maximum render scale
-            const renderScaleRatio = targetBytes / originalSize;
-            const maxScale = Math.max(0.1, Math.min(1.0, Math.sqrt(renderScaleRatio) * 1.5));
-
-            // Step 2 – binary search over parameter p [0.0 ... 1.0]
-            let lo = 0.0, hi = 1.0;
-            let bestBytes = null;
+            // Phase 1: Binary search on quality at scale=1.0 (preserves max sharpness)
+            updateStatus('Phase 1: Finding optimal quality…');
             let bestPdf = null;
-            let closestDiff = Infinity;
-            const MAX_ITER = 12;
+            let bestSize = Infinity;
+            let bestDiff = Infinity;
+            let lo = 0.01, hi = 0.95;
 
-            for (let iter = 0; iter < MAX_ITER; iter++) {
-                const p = (lo + hi) / 2;
+            for (let iter = 0; iter < 12; iter++) {
+                const qMid = (lo + hi) / 2;
+                updateStatus(`Quality search ${iter + 1}/12 (${Math.round(qMid * 100)}%)…`);
+                const candidate = await compressAtSettings(pdfDoc, totalPages, qMid, 1.0);
+                const size = candidate.length;
+                const diff = Math.abs(size - targetBytes);
 
-                // Map p to scale and quality:
-                const currentScale = Math.max(0.05, maxScale * (0.2 + 0.8 * p));
-                const currentQuality = Math.max(0.01, Math.min(0.95, p * 0.95));
-
-                updateStatus(`Search pass ${iter + 1}/${MAX_ITER} (Qual: ${Math.round(currentQuality * 100)}%, Scale: ${Math.round(currentScale * 100)}%)…`);
-                const candidate = await compressAtQuality(pdfDoc, totalPages, currentQuality, currentScale, targetWPoints, targetHPoints);
-                const candidateSize = candidate.length;
-
-                const diff = Math.abs(candidateSize - targetBytes);
-
-                // We want to find the absolute closest match to targetBytes.
-                // We allow it to be slightly over (e.g. up to 5% over) if that's the closest we can get,
-                // otherwise we prefer the closest value we can find under the limit.
-                if (diff < closestDiff) {
-                    bestBytes = candidateSize;
+                if (diff < bestDiff) {
                     bestPdf = candidate;
-                    closestDiff = diff;
+                    bestSize = size;
+                    bestDiff = diff;
                 }
 
-                if (candidateSize < targetBytes) {
-                    // Under target — try to increase size to get closer
-                    lo = p;
+                if (size <= targetBytes) {
+                    lo = qMid;
                 } else {
-                    // Over target — try to decrease size
-                    hi = p;
+                    hi = qMid;
                 }
 
-                // Convergence check
-                if ((hi - lo) < 0.01 || diff < (targetBytes * 0.02)) break; // Stop early if within 2%
+                if (diff < targetBytes * 0.02) break;
+                if (Math.abs(hi - lo) < 0.01) break;
             }
 
-            if (bestBytes === null) {
-                reachedTarget = false;
-                updateStatus(`Maximum compression applied (target not perfectly reached)…`);
-                pdfBytes = bestPdf; // Fallback
+            // Check if quality-only search was sufficient
+            if (bestSize <= targetBytes * 1.03) {
+                pdfBytes = bestPdf;
             } else {
+                // Phase 2: Quality at minimum still too large — binary search on SCALE
+                updateStatus('Phase 2: Adjusting resolution…');
+                let scaleLo = 0.1, scaleHi = 1.0;
+                let foundScale = 0.5;
+
+                for (let iter = 0; iter < 10; iter++) {
+                    const sMid = (scaleLo + scaleHi) / 2;
+                    updateStatus(`Scale search ${iter + 1}/10 (${Math.round(sMid * 100)}%)…`);
+                    const candidate = await compressAtSettings(pdfDoc, totalPages, 0.4, sMid);
+                    const size = candidate.length;
+                    const diff = Math.abs(size - targetBytes);
+
+                    if (diff < bestDiff) {
+                        bestPdf = candidate;
+                        bestSize = size;
+                        bestDiff = diff;
+                    }
+
+                    if (size <= targetBytes) {
+                        foundScale = sMid;
+                        scaleLo = sMid;
+                    } else {
+                        scaleHi = sMid;
+                    }
+
+                    if (diff < targetBytes * 0.03) break;
+                    if (Math.abs(scaleHi - scaleLo) < 0.02) break;
+                }
+
+                // Phase 3: Final quality refinement at found scale
+                updateStatus('Phase 3: Fine-tuning…');
+                lo = 0.01; hi = 0.95;
+
+                for (let iter = 0; iter < 8; iter++) {
+                    const qMid = (lo + hi) / 2;
+                    updateStatus(`Refinement ${iter + 1}/8 (Q:${Math.round(qMid * 100)}% S:${Math.round(foundScale * 100)}%)…`);
+                    const candidate = await compressAtSettings(pdfDoc, totalPages, qMid, foundScale);
+                    const size = candidate.length;
+                    const diff = Math.abs(size - targetBytes);
+
+                    if (diff < bestDiff) {
+                        bestPdf = candidate;
+                        bestSize = size;
+                        bestDiff = diff;
+                    }
+
+                    if (size <= targetBytes) {
+                        lo = qMid;
+                    } else {
+                        hi = qMid;
+                    }
+
+                    if (diff < targetBytes * 0.01) break;
+                    if (Math.abs(hi - lo) < 0.01) break;
+                }
+
                 pdfBytes = bestPdf;
             }
         }
@@ -429,11 +425,10 @@ async function processCompress() {
         const outputSize = pdfBytes.length;
         const reduction = ((1 - outputSize / originalSize) * 100).toFixed(1);
 
-        // Target is considered achieved if it is within an acceptable margin (+10% or strictly under).
         const acceptableTarget = targetBytes > 0 && (outputSize <= targetBytes * 1.10);
 
         const targetNote = (targetBytes > 0 && !acceptableTarget)
-            ? `<div class="stat-row stat-bad"><span>⚠ Target:</span> <strong>Not exactly reachable</strong></div>`
+            ? `<div class="stat-row stat-bad"><span>⚠ Target:</span> <strong>Not exactly reachable (closest: ${formatFileSize(outputSize)})</strong></div>`
             : (targetBytes > 0
                 ? `<div class="stat-row stat-good"><span>✔ Target:</span> <strong>${formatFileSize(targetBytes)} — achieved!</strong></div>`
                 : '');

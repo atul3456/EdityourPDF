@@ -210,18 +210,23 @@ async function renderAllPages() {
     document.getElementById('pdf-main-container').style.transform = 'scale(1)';
     document.getElementById('zoom-level-display').innerText = '100%';
 
+    // HiDPI: render at 2x resolution for sharp text
+    const pixelRatio = Math.max(window.devicePixelRatio || 1, 2);
+
     for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const defaultViewport = page.getViewport({ scale: 1.0 });
-        const scale = targetWidth / defaultViewport.width;
-        const viewport = page.getViewport({ scale });
+        const displayScale = targetWidth / defaultViewport.width;
+        const renderScale = displayScale * pixelRatio;
+        const displayViewport = page.getViewport({ scale: displayScale });
+        const renderViewport = page.getViewport({ scale: renderScale });
         const wrapper = document.createElement('div');
         wrapper.className = 'page-wrapper';
-        wrapper.style.width = `${viewport.width}px`;
-        wrapper.style.height = `${viewport.height}px`;
+        wrapper.style.width = `${displayViewport.width}px`;
+        wrapper.style.height = `${displayViewport.height}px`;
         wrapper.dataset.pageNumber = i;
-        wrapper.dataset.originalWidth = viewport.width;
-        wrapper.dataset.originalHeight = viewport.height;
+        wrapper.dataset.originalWidth = displayViewport.width;
+        wrapper.dataset.originalHeight = displayViewport.height;
         // Use click for page selection so scrolling works on mobile
         wrapper.addEventListener('click', () => {
             document.querySelectorAll('.page-wrapper').forEach(p => p.classList.remove('selected-page'));
@@ -229,9 +234,13 @@ async function renderAllPages() {
         });
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        await page.render({ canvasContext: context, viewport }).promise;
+        // Canvas internal resolution = 2x for sharpness
+        canvas.width = renderViewport.width;
+        canvas.height = renderViewport.height;
+        // CSS display size = normal display size
+        canvas.style.width = `${displayViewport.width}px`;
+        canvas.style.height = `${displayViewport.height}px`;
+        await page.render({ canvasContext: context, viewport: renderViewport }).promise;
         const overlay = document.createElement('div');
         overlay.className = 'interaction-layer cursor-tool';
         overlay.addEventListener('mousedown', (e) => handleOverlayInteraction(e, overlay));
@@ -949,7 +958,7 @@ function openEditorToolPanel(tool) {
     const configs = {
         'rotate': { title: 'Rotate Pages', html: '<div style="display:flex;flex-direction:column;gap:12px;"><label style="color:#a5b4fc;font-size:0.85rem;">Rotation Angle</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="glass-btn secondary small rot-opt active" data-deg="90">90° CW</button><button class="glass-btn secondary small rot-opt" data-deg="180">180°</button><button class="glass-btn secondary small rot-opt" data-deg="270">90° CCW</button></div><label style="color:#a5b4fc;font-size:0.85rem;">Apply to</label><select class="glass-select" id="et-rotate-scope"><option value="all">All pages</option><option value="selected">Selected page only</option></select></div>' },
         'watermark': { title: 'Add Watermark', html: '<div style="display:flex;flex-direction:column;gap:10px;"><div style="background:rgba(0,0,0,0.25);border-radius:8px;border:1px solid rgba(255,255,255,0.08);padding:6px;display:flex;align-items:center;justify-content:center;min-height:120px;margin-bottom:4px;"><canvas id="et-wm-preview" style="max-width:100%;max-height:180px;border-radius:6px;display:block;"></canvas></div><input type="text" class="glass-input" id="et-wm-text" placeholder="Watermark text..." value="CONFIDENTIAL"><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Position</label><select class="glass-select" id="et-wm-position" style="flex:1;"><option value="center">Center</option><option value="top-left">Top Left</option><option value="top-right">Top Right</option><option value="bottom-left">Bottom Left</option><option value="bottom-right">Bottom Right</option><option value="tiled">Tiled</option></select></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Size</label><input type="range" id="et-wm-size" min="12" max="120" value="50" style="flex:1;"><span id="et-wm-size-val" style="color:#e2e8f0;font-size:0.85rem;">50</span></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Opacity</label><input type="range" id="et-wm-opacity" min="5" max="80" value="15" style="flex:1;"><span id="et-wm-opacity-val" style="color:#e2e8f0;font-size:0.85rem;">15%</span></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Rotation</label><input type="range" id="et-wm-rotation" min="-90" max="90" value="-45" style="flex:1;"><span id="et-wm-rotation-val" style="color:#e2e8f0;font-size:0.85rem;">-45°</span></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Color</label><input type="color" id="et-wm-color" value="#888888"></div></div>' },
-        'compress': { title: 'Compress PDF', html: '<div style="display:flex;flex-direction:column;gap:10px;"><label style="color:#a5b4fc;font-size:0.85rem;">Quality Level</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="glass-btn secondary small comp-opt" data-q="0.5">Low</button><button class="glass-btn secondary small comp-opt active" data-q="0.7">Medium</button><button class="glass-btn secondary small comp-opt" data-q="0.85">High</button></div></div>' },
+        'compress': { title: 'Compress PDF', html: '<div style="display:flex;flex-direction:column;gap:10px;"><label style="color:#a5b4fc;font-size:0.85rem;">Target File Size</label><p style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0;">Leave empty for smart auto-compression.</p><div style="display:flex;gap:8px;align-items:center;"><input type="number" id="et-comp-target-val" class="glass-input" placeholder="e.g. 2" style="flex:1;"><select id="et-comp-target-unit" class="glass-select" style="width:70px;"><option value="KB">KB</option><option value="MB" selected>MB</option></select></div></div>' },
         'pagenums': { title: 'Add Page Numbers', html: '<div style="display:flex;flex-direction:column;gap:10px;"><label style="color:#a5b4fc;font-size:0.85rem;">Position</label><select class="glass-select" id="et-pn-position"><option value="bottom-center">Bottom Center</option><option value="bottom-right">Bottom Right</option><option value="bottom-left">Bottom Left</option><option value="top-center">Top Center</option><option value="top-right">Top Right</option></select><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Size</label><input type="range" id="et-pn-size" min="8" max="24" value="12" style="flex:1;"><span id="et-pn-size-val" style="color:#e2e8f0;font-size:0.85rem;">12</span></div><label style="color:#a5b4fc;font-size:0.85rem;">Starting number</label><input type="number" class="glass-input" id="et-pn-start" value="1" min="1" style="width:80px;"></div>' },
         'resize': { title: 'Resize Pages', html: '<div style="display:flex;flex-direction:column;gap:10px;"><label style="color:#a5b4fc;font-size:0.85rem;">Target Size</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="glass-btn secondary small rs-opt active" data-rs="a4">A4</button><button class="glass-btn secondary small rs-opt" data-rs="letter">Letter</button><button class="glass-btn secondary small rs-opt" data-rs="legal">Legal</button><button class="glass-btn secondary small rs-opt" data-rs="a3">A3</button><button class="glass-btn secondary small rs-opt" data-rs="a5">A5</button></div><label style="display:flex;align-items:center;gap:8px;color:#e2e8f0;font-size:0.85rem;margin-top:6px;"><input type="checkbox" id="et-rs-aspect" checked> Keep aspect ratio</label></div>' },
         'redact-inline': { title: 'Redact Content', html: '<div style="display:flex;flex-direction:column;gap:10px;"><p style="color:#e2e8f0;font-size:0.85rem;"><i class="fa-solid fa-info-circle" style="color:#a5b4fc;"></i> Draw black rectangles on the page preview using your cursor.</p></div>' },
@@ -960,7 +969,7 @@ function openEditorToolPanel(tool) {
     const cfg = configs[tool]; if (!cfg) return;
     title.textContent = cfg.title; body.innerHTML = cfg.html;
     if (tool === 'redact-inline') { applyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Done'; document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active')); currentTool = 'whiteout'; updateCursor(); refreshOverlays(); }
-    setupOptionButtons('.rot-opt', 'deg'); setupOptionButtons('.comp-opt', 'q'); setupOptionButtons('.rs-opt', 'rs');
+    setupOptionButtons('.rot-opt', 'deg'); setupOptionButtons('.rs-opt', 'rs');
     const wmSize = document.getElementById('et-wm-size'); if (wmSize) wmSize.oninput = () => { document.getElementById('et-wm-size-val').textContent = wmSize.value; updateEditorWmPreview(); };
     const wmOp = document.getElementById('et-wm-opacity'); if (wmOp) wmOp.oninput = () => { document.getElementById('et-wm-opacity-val').textContent = wmOp.value + '%'; updateEditorWmPreview(); };
     const wmRot = document.getElementById('et-wm-rotation'); if (wmRot) wmRot.oninput = () => { document.getElementById('et-wm-rotation-val').textContent = wmRot.value + '°'; updateEditorWmPreview(); };
@@ -1113,26 +1122,90 @@ async function execWatermark() {
     await renderAllPages(); hideProgress(); closeEditorToolPanel(); showToast('Watermark added.', 'success');
 }
 async function execCompress() {
-    const activeBtn = document.querySelector('.comp-opt.active');
-    const quality = parseFloat(activeBtn?.dataset?.q || '0.7');
     showProgress('Compressing...');
-    const bytes = await currentPdfDoc.save();
-    const pdf = await pdfjsLib.getDocument(bytes).promise;
-    const newDoc = await PDFLib.PDFDocument.create();
-    for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i); const vp = page.getViewport({ scale: 1.5 });
-        const canvas = document.createElement('canvas'); canvas.width = vp.width; canvas.height = vp.height;
-        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-        const img = await newDoc.embedJpg(canvas.toDataURL('image/jpeg', quality));
-        const origVp = page.getViewport({ scale: 1.0 });
-        const newPage = newDoc.addPage([origVp.width, origVp.height]);
-        newPage.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height });
+    const origBytes = await currentPdfDoc.save();
+    const originalSize = origBytes.length;
+    const pdf = await pdfjsLib.getDocument(origBytes).promise;
+    const totalPages = pdf.numPages;
+
+    // Get target size if specified
+    const targetValEl = document.getElementById('et-comp-target-val');
+    const targetUnitEl = document.getElementById('et-comp-target-unit');
+    const targetVal = parseFloat(targetValEl?.value || '0');
+    const targetUnit = targetUnitEl?.value || 'MB';
+    let targetBytes = 0;
+    if (targetVal > 0) {
+        targetBytes = targetUnit === 'KB' ? targetVal * 1024 : targetVal * 1024 * 1024;
     }
-    const newBytes = await newDoc.save();
-    currentPdfDoc = await PDFLib.PDFDocument.load(newBytes);
+
+    // Helper to compress at given quality & scale
+    async function compressAt(q, s) {
+        const newDoc = await PDFLib.PDFDocument.create();
+        for (let i = 1; i <= totalPages; i++) {
+            const page = await pdf.getPage(i);
+            const origVP = page.getViewport({ scale: 1.0 });
+            const renderVP = page.getViewport({ scale: s });
+            const canvas = document.createElement('canvas');
+            canvas.width = renderVP.width; canvas.height = renderVP.height;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: renderVP }).promise;
+            const img = await newDoc.embedJpg(canvas.toDataURL('image/jpeg', q));
+            const newPage = newDoc.addPage([origVP.width, origVP.height]);
+            newPage.drawImage(img, { x: 0, y: 0, width: origVP.width, height: origVP.height });
+        }
+        return await newDoc.save();
+    }
+
+    let resultBytes;
+
+    if (targetBytes <= 0) {
+        // Smart auto-compress
+        resultBytes = await compressAt(0.6, 1.0);
+    } else {
+        // Phase 1: Quality search at scale=1.0
+        let bestPdf = null, bestDiff = Infinity;
+        let lo = 0.01, hi = 0.95;
+        for (let i = 0; i < 10; i++) {
+            const qMid = (lo + hi) / 2;
+            const c = await compressAt(qMid, 1.0);
+            const diff = Math.abs(c.length - targetBytes);
+            if (diff < bestDiff) { bestPdf = c; bestDiff = diff; }
+            if (c.length <= targetBytes) lo = qMid; else hi = qMid;
+            if (diff < targetBytes * 0.02 || Math.abs(hi - lo) < 0.01) break;
+        }
+
+        if (bestPdf && bestPdf.length <= targetBytes * 1.03) {
+            resultBytes = bestPdf;
+        } else {
+            // Phase 2: Scale search
+            let sLo = 0.1, sHi = 1.0, foundScale = 0.5;
+            for (let i = 0; i < 8; i++) {
+                const sMid = (sLo + sHi) / 2;
+                const c = await compressAt(0.4, sMid);
+                const diff = Math.abs(c.length - targetBytes);
+                if (diff < bestDiff) { bestPdf = c; bestDiff = diff; }
+                if (c.length <= targetBytes) { foundScale = sMid; sLo = sMid; } else { sHi = sMid; }
+                if (diff < targetBytes * 0.03 || Math.abs(sHi - sLo) < 0.02) break;
+            }
+            // Phase 3: Refine quality at found scale
+            lo = 0.01; hi = 0.95;
+            for (let i = 0; i < 7; i++) {
+                const qMid = (lo + hi) / 2;
+                const c = await compressAt(qMid, foundScale);
+                const diff = Math.abs(c.length - targetBytes);
+                if (diff < bestDiff) { bestPdf = c; bestDiff = diff; }
+                if (c.length <= targetBytes) lo = qMid; else hi = qMid;
+                if (diff < targetBytes * 0.01 || Math.abs(hi - lo) < 0.01) break;
+            }
+            resultBytes = bestPdf;
+        }
+    }
+
+    currentPdfDoc = await PDFLib.PDFDocument.load(resultBytes);
     await renderAllPages(); hideProgress(); closeEditorToolPanel();
-    const saved = Math.round((1 - newBytes.length / bytes.length) * 100);
-    showToast(`Compressed: ${(bytes.length / 1024).toFixed(0)}KB → ${(newBytes.length / 1024).toFixed(0)}KB (${saved}% smaller)`, 'success');
+    const saved = Math.round((1 - resultBytes.length / originalSize) * 100);
+    const fromStr = originalSize > 1024 * 1024 ? (originalSize / 1024 / 1024).toFixed(2) + 'MB' : (originalSize / 1024).toFixed(0) + 'KB';
+    const toStr = resultBytes.length > 1024 * 1024 ? (resultBytes.length / 1024 / 1024).toFixed(2) + 'MB' : (resultBytes.length / 1024).toFixed(0) + 'KB';
+    showToast(`Compressed: ${fromStr} → ${toStr} (${saved}% smaller)`, 'success');
 }
 async function execPageNumbers() {
     const position = document.getElementById('et-pn-position')?.value || 'bottom-center';
