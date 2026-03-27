@@ -38,9 +38,20 @@ function setupNavigation() {
 
     // Top & Drawer Navigation Links
     document.getElementById('nav-pdf-tools').addEventListener('click', (e) => { e.preventDefault(); showView('home'); });
-    document.getElementById('nav-img-editor').addEventListener('click', (e) => { e.preventDefault(); showView('img-editor'); });
+    document.getElementById('nav-img-editor').addEventListener('click', (e) => { window.location.href = 'image-editor.html'; });
     document.getElementById('drawer-pdf-tools').addEventListener('click', (e) => { e.preventDefault(); closeMobileDrawer(); showView('home'); });
-    document.getElementById('drawer-img-editor').addEventListener('click', (e) => { e.preventDefault(); closeMobileDrawer(); showView('img-editor'); });
+    document.getElementById('drawer-img-editor').addEventListener('click', (e) => { closeMobileDrawer(); window.location.href = 'image-editor.html'; });
+
+    // Support dropdown toggle
+    const supportBtn = document.getElementById('nav-support-btn');
+    const supportDropdown = document.getElementById('nav-support-dropdown');
+    if (supportBtn && supportDropdown) {
+        supportBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            supportDropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', () => supportDropdown.classList.remove('open'));
+    }
 
     document.getElementById('card-editor').addEventListener('click', () => showView('editor'));
     document.getElementById('card-merge').addEventListener('click', () => showView('merge'));
@@ -199,18 +210,23 @@ async function renderAllPages() {
     document.getElementById('pdf-main-container').style.transform = 'scale(1)';
     document.getElementById('zoom-level-display').innerText = '100%';
 
+    // HiDPI: render at 2x resolution for sharp text
+    const pixelRatio = Math.max(window.devicePixelRatio || 1, 2);
+
     for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const defaultViewport = page.getViewport({ scale: 1.0 });
-        const scale = targetWidth / defaultViewport.width;
-        const viewport = page.getViewport({ scale });
+        const displayScale = targetWidth / defaultViewport.width;
+        const renderScale = displayScale * pixelRatio;
+        const displayViewport = page.getViewport({ scale: displayScale });
+        const renderViewport = page.getViewport({ scale: renderScale });
         const wrapper = document.createElement('div');
         wrapper.className = 'page-wrapper';
-        wrapper.style.width = `${viewport.width}px`;
-        wrapper.style.height = `${viewport.height}px`;
+        wrapper.style.width = `${displayViewport.width}px`;
+        wrapper.style.height = `${displayViewport.height}px`;
         wrapper.dataset.pageNumber = i;
-        wrapper.dataset.originalWidth = viewport.width;
-        wrapper.dataset.originalHeight = viewport.height;
+        wrapper.dataset.originalWidth = displayViewport.width;
+        wrapper.dataset.originalHeight = displayViewport.height;
         // Use click for page selection so scrolling works on mobile
         wrapper.addEventListener('click', () => {
             document.querySelectorAll('.page-wrapper').forEach(p => p.classList.remove('selected-page'));
@@ -218,9 +234,13 @@ async function renderAllPages() {
         });
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        await page.render({ canvasContext: context, viewport }).promise;
+        // Canvas internal resolution = 2x for sharpness
+        canvas.width = renderViewport.width;
+        canvas.height = renderViewport.height;
+        // CSS display size = normal display size
+        canvas.style.width = `${displayViewport.width}px`;
+        canvas.style.height = `${displayViewport.height}px`;
+        await page.render({ canvasContext: context, viewport: renderViewport }).promise;
         const overlay = document.createElement('div');
         overlay.className = 'interaction-layer cursor-tool';
         overlay.addEventListener('mousedown', (e) => handleOverlayInteraction(e, overlay));
@@ -494,7 +514,8 @@ function createFloatingText(x, y, p) {
     d.style.outline = 'none';
     d.style.minHeight = '24px';
     d.style.padding = '2px 4px';
-    d.style.wordBreak = 'break-word';
+    d.style.whiteSpace = 'nowrap';
+    d.style.overflow = 'visible';
 
     // Resize handle at bottom-right
     const rh = document.createElement('div');
@@ -653,30 +674,76 @@ function attachResize(el, handle, isText) {
         e.stopPropagation();
         if (e.cancelable) e.preventDefault();
         const pt = getPointerXY(e);
-        const sX = pt.x, sY = pt.y, sW = el.offsetWidth, sH = el.offsetHeight;
-        const sFontSize = isText ? (parseFloat(el.style.fontSize) || 16) : 0;
+        const sX = pt.x, sY = pt.y;
 
-        const onMove = (ev) => {
-            if (ev.cancelable) ev.preventDefault();
-            const mp = getPointerXY(ev);
-            const newW = Math.max(40, sW + mp.x - sX);
-            const newH = Math.max(20, sH + mp.y - sY);
-            el.style.width = newW + 'px';
-            el.style.height = newH + 'px';
-            if (isText) el.style.fontSize = Math.max(8, sFontSize * Math.max(0.3, newW / sW)) + 'px';
-        };
-        const onUp = () => {
-            window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp);
-            window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onUp);
-        };
-        window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
-        window.addEventListener('touchmove', onMove, { passive: false }); window.addEventListener('touchend', onUp);
+        if (isText) {
+            // For text: use transform scale to preserve layout perfectly
+            const currentScale = parseFloat(el.dataset.scale || '1');
+            const sW = el.getBoundingClientRect().width;
+            const onMove = (ev) => {
+                if (ev.cancelable) ev.preventDefault();
+                const mp = getPointerXY(ev);
+                const deltaW = mp.x - sX;
+                const newScale = Math.max(0.3, Math.min(5, currentScale * (1 + deltaW / sW)));
+                el.style.transform = `scale(${newScale})`;
+                el.style.transformOrigin = 'top left';
+                el.dataset.scale = newScale;
+            };
+            const onUp = () => {
+                window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp);
+                window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onUp);
+            };
+            window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
+            window.addEventListener('touchmove', onMove, { passive: false }); window.addEventListener('touchend', onUp);
+        } else {
+            // For images: resize width/height normally
+            const sW = el.offsetWidth, sH = el.offsetHeight;
+            const onMove = (ev) => {
+                if (ev.cancelable) ev.preventDefault();
+                const mp = getPointerXY(ev);
+                const newW = Math.max(40, sW + mp.x - sX);
+                const newH = Math.max(20, sH + mp.y - sY);
+                el.style.width = newW + 'px';
+                el.style.height = newH + 'px';
+            };
+            const onUp = () => {
+                window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp);
+                window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onUp);
+            };
+            window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
+            window.addEventListener('touchmove', onMove, { passive: false }); window.addEventListener('touchend', onUp);
+        }
     };
     handle.addEventListener('mousedown', onStart);
     handle.addEventListener('touchstart', onStart, { passive: false });
 }
 
-function applyStyle(el) { el.style.color = document.getElementById('text-color').value; el.style.fontFamily = document.getElementById('font-family').value; el.style.fontSize = `${document.getElementById('font-size').value}px`; }
+function applyStyle(el) {
+    el.style.color = document.getElementById('text-color').value;
+    el.style.fontFamily = document.getElementById('font-family').value;
+    el.style.fontSize = `${document.getElementById('font-size').value}px`;
+    const boldBtn = document.getElementById('btn-text-bold');
+    const italicBtn = document.getElementById('btn-text-italic');
+    const underlineBtn = document.getElementById('btn-text-underline');
+    if (boldBtn && boldBtn.classList.contains('active')) el.style.fontWeight = 'bold';
+    if (italicBtn && italicBtn.classList.contains('active')) el.style.fontStyle = 'italic';
+    if (underlineBtn && underlineBtn.classList.contains('active')) el.style.textDecoration = 'underline';
+}
+
+// Bold / Italic / Underline toggle buttons
+['btn-text-bold', 'btn-text-italic', 'btn-text-underline'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        // Apply to currently focused text element
+        const focused = document.querySelector('.added-text-element:focus-within');
+        if (focused) {
+            if (id === 'btn-text-bold') focused.style.fontWeight = btn.classList.contains('active') ? 'bold' : 'normal';
+            if (id === 'btn-text-italic') focused.style.fontStyle = btn.classList.contains('active') ? 'italic' : 'normal';
+            if (id === 'btn-text-underline') focused.style.textDecoration = btn.classList.contains('active') ? 'underline' : 'none';
+        }
+    });
+});
 
 // --- Color Helper ---
 function domColorToPdfColor(colorStr) {
@@ -715,7 +782,9 @@ async function applyChanges(download) {
                 if (!textStr) return;
                 const l = parseFloat(t.style.left) || 0, tp = parseFloat(t.style.top) || 0;
                 const fs = parseFloat(t.style.fontSize) || 16;
-                p.drawText(textStr, { x: l * sx, y: height - (tp * sy) - (fs * sy * 0.8), size: fs * sy, color: domColorToPdfColor(t.style.color || document.getElementById('text-color').value) });
+                const scale = parseFloat(t.dataset.scale || '1');
+                const scaledFs = fs * scale;
+                p.drawText(textStr, { x: l * sx, y: height - (tp * sy) - (scaledFs * sy * 0.8), size: scaledFs * sy, color: domColorToPdfColor(t.style.color || document.getElementById('text-color').value) });
             });
             const images = w.querySelectorAll('.added-image-element');
             for (const imgDiv of images) {
@@ -888,8 +957,8 @@ function openEditorToolPanel(tool) {
     applyBtn.classList.remove('hidden');
     const configs = {
         'rotate': { title: 'Rotate Pages', html: '<div style="display:flex;flex-direction:column;gap:12px;"><label style="color:#a5b4fc;font-size:0.85rem;">Rotation Angle</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="glass-btn secondary small rot-opt active" data-deg="90">90° CW</button><button class="glass-btn secondary small rot-opt" data-deg="180">180°</button><button class="glass-btn secondary small rot-opt" data-deg="270">90° CCW</button></div><label style="color:#a5b4fc;font-size:0.85rem;">Apply to</label><select class="glass-select" id="et-rotate-scope"><option value="all">All pages</option><option value="selected">Selected page only</option></select></div>' },
-        'watermark': { title: 'Add Watermark', html: '<div style="display:flex;flex-direction:column;gap:10px;"><input type="text" class="glass-input" id="et-wm-text" placeholder="Watermark text..." value="CONFIDENTIAL"><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Size</label><input type="range" id="et-wm-size" min="20" max="120" value="50" style="flex:1;"><span id="et-wm-size-val" style="color:#e2e8f0;font-size:0.85rem;">50</span></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Opacity</label><input type="range" id="et-wm-opacity" min="5" max="50" value="15" style="flex:1;"><span id="et-wm-opacity-val" style="color:#e2e8f0;font-size:0.85rem;">15%</span></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Color</label><input type="color" id="et-wm-color" value="#888888"></div></div>' },
-        'compress': { title: 'Compress PDF', html: '<div style="display:flex;flex-direction:column;gap:10px;"><label style="color:#a5b4fc;font-size:0.85rem;">Quality Level</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="glass-btn secondary small comp-opt" data-q="0.5">Low</button><button class="glass-btn secondary small comp-opt active" data-q="0.7">Medium</button><button class="glass-btn secondary small comp-opt" data-q="0.85">High</button></div></div>' },
+        'watermark': { title: 'Add Watermark', html: '<div style="display:flex;flex-direction:column;gap:10px;"><div style="background:rgba(0,0,0,0.25);border-radius:8px;border:1px solid rgba(255,255,255,0.08);padding:6px;display:flex;align-items:center;justify-content:center;min-height:120px;margin-bottom:4px;"><canvas id="et-wm-preview" style="max-width:100%;max-height:180px;border-radius:6px;display:block;"></canvas></div><input type="text" class="glass-input" id="et-wm-text" placeholder="Watermark text..." value="CONFIDENTIAL"><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Position</label><select class="glass-select" id="et-wm-position" style="flex:1;"><option value="center">Center</option><option value="top-left">Top Left</option><option value="top-right">Top Right</option><option value="bottom-left">Bottom Left</option><option value="bottom-right">Bottom Right</option><option value="tiled">Tiled</option></select></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Size</label><input type="range" id="et-wm-size" min="12" max="120" value="50" style="flex:1;"><span id="et-wm-size-val" style="color:#e2e8f0;font-size:0.85rem;">50</span></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Opacity</label><input type="range" id="et-wm-opacity" min="5" max="80" value="15" style="flex:1;"><span id="et-wm-opacity-val" style="color:#e2e8f0;font-size:0.85rem;">15%</span></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Rotation</label><input type="range" id="et-wm-rotation" min="-90" max="90" value="-45" style="flex:1;"><span id="et-wm-rotation-val" style="color:#e2e8f0;font-size:0.85rem;">-45°</span></div><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Color</label><input type="color" id="et-wm-color" value="#888888"></div></div>' },
+        'compress': { title: 'Compress PDF', html: '<div style="display:flex;flex-direction:column;gap:10px;"><label style="color:#a5b4fc;font-size:0.85rem;">Target File Size</label><p style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0;">Leave empty for smart auto-compression.</p><div style="display:flex;gap:8px;align-items:center;"><input type="number" id="et-comp-target-val" class="glass-input" placeholder="e.g. 2" style="flex:1;"><select id="et-comp-target-unit" class="glass-select" style="width:70px;"><option value="KB">KB</option><option value="MB" selected>MB</option></select></div></div>' },
         'pagenums': { title: 'Add Page Numbers', html: '<div style="display:flex;flex-direction:column;gap:10px;"><label style="color:#a5b4fc;font-size:0.85rem;">Position</label><select class="glass-select" id="et-pn-position"><option value="bottom-center">Bottom Center</option><option value="bottom-right">Bottom Right</option><option value="bottom-left">Bottom Left</option><option value="top-center">Top Center</option><option value="top-right">Top Right</option></select><div style="display:flex;gap:10px;align-items:center;"><label style="color:#a5b4fc;font-size:0.85rem;">Size</label><input type="range" id="et-pn-size" min="8" max="24" value="12" style="flex:1;"><span id="et-pn-size-val" style="color:#e2e8f0;font-size:0.85rem;">12</span></div><label style="color:#a5b4fc;font-size:0.85rem;">Starting number</label><input type="number" class="glass-input" id="et-pn-start" value="1" min="1" style="width:80px;"></div>' },
         'resize': { title: 'Resize Pages', html: '<div style="display:flex;flex-direction:column;gap:10px;"><label style="color:#a5b4fc;font-size:0.85rem;">Target Size</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="glass-btn secondary small rs-opt active" data-rs="a4">A4</button><button class="glass-btn secondary small rs-opt" data-rs="letter">Letter</button><button class="glass-btn secondary small rs-opt" data-rs="legal">Legal</button><button class="glass-btn secondary small rs-opt" data-rs="a3">A3</button><button class="glass-btn secondary small rs-opt" data-rs="a5">A5</button></div><label style="display:flex;align-items:center;gap:8px;color:#e2e8f0;font-size:0.85rem;margin-top:6px;"><input type="checkbox" id="et-rs-aspect" checked> Keep aspect ratio</label></div>' },
         'redact-inline': { title: 'Redact Content', html: '<div style="display:flex;flex-direction:column;gap:10px;"><p style="color:#e2e8f0;font-size:0.85rem;"><i class="fa-solid fa-info-circle" style="color:#a5b4fc;"></i> Draw black rectangles on the page preview using your cursor.</p></div>' },
@@ -900,9 +969,14 @@ function openEditorToolPanel(tool) {
     const cfg = configs[tool]; if (!cfg) return;
     title.textContent = cfg.title; body.innerHTML = cfg.html;
     if (tool === 'redact-inline') { applyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Done'; document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active')); currentTool = 'whiteout'; updateCursor(); refreshOverlays(); }
-    setupOptionButtons('.rot-opt', 'deg'); setupOptionButtons('.comp-opt', 'q'); setupOptionButtons('.rs-opt', 'rs');
-    const wmSize = document.getElementById('et-wm-size'); if (wmSize) wmSize.oninput = () => document.getElementById('et-wm-size-val').textContent = wmSize.value;
-    const wmOp = document.getElementById('et-wm-opacity'); if (wmOp) wmOp.oninput = () => document.getElementById('et-wm-opacity-val').textContent = wmOp.value + '%';
+    setupOptionButtons('.rot-opt', 'deg'); setupOptionButtons('.rs-opt', 'rs');
+    const wmSize = document.getElementById('et-wm-size'); if (wmSize) wmSize.oninput = () => { document.getElementById('et-wm-size-val').textContent = wmSize.value; updateEditorWmPreview(); };
+    const wmOp = document.getElementById('et-wm-opacity'); if (wmOp) wmOp.oninput = () => { document.getElementById('et-wm-opacity-val').textContent = wmOp.value + '%'; updateEditorWmPreview(); };
+    const wmRot = document.getElementById('et-wm-rotation'); if (wmRot) wmRot.oninput = () => { document.getElementById('et-wm-rotation-val').textContent = wmRot.value + '°'; updateEditorWmPreview(); };
+    const wmText = document.getElementById('et-wm-text'); if (wmText) wmText.oninput = () => updateEditorWmPreview();
+    const wmPos = document.getElementById('et-wm-position'); if (wmPos) wmPos.onchange = () => updateEditorWmPreview();
+    const wmCol = document.getElementById('et-wm-color'); if (wmCol) wmCol.oninput = () => updateEditorWmPreview();
+    if (tool === 'watermark') initEditorWmPreview();
     const pnSize = document.getElementById('et-pn-size'); if (pnSize) pnSize.oninput = () => document.getElementById('et-pn-size-val').textContent = pnSize.value;
     if (tool === 'delete-inline') buildDeletePagesList();
     panel.classList.remove('hidden');
@@ -965,37 +1039,173 @@ async function execRotate() {
     await renderAllPages(); hideProgress(); closeEditorToolPanel();
     showToast(`Rotated ${scope === 'all' ? 'all pages' : 'selected page'} by ${degrees}°`, 'success');
 }
+// Editor watermark preview
+async function initEditorWmPreview() {
+    if (!currentPdfDoc) return;
+    try {
+        const bytes = await currentPdfDoc.save();
+        const pdf = await pdfjsLib.getDocument(bytes).promise;
+        const page = await pdf.getPage(1);
+        const vp = page.getViewport({ scale: 0.5 });
+        const off = document.createElement('canvas'); off.width = vp.width; off.height = vp.height;
+        await page.render({ canvasContext: off.getContext('2d'), viewport: vp }).promise;
+        window._editorWmImg = new Image();
+        window._editorWmImg.onload = () => updateEditorWmPreview();
+        window._editorWmImg.src = off.toDataURL();
+    } catch (e) { console.error('Editor WM preview error:', e); }
+}
+function updateEditorWmPreview() {
+    const img = window._editorWmImg; if (!img) return;
+    const canvas = document.getElementById('et-wm-preview'); if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.width; canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    const text = document.getElementById('et-wm-text')?.value || 'WATERMARK';
+    const fontSize = parseInt(document.getElementById('et-wm-size')?.value || '50') * (img.width / 595);
+    const opPct = parseInt(document.getElementById('et-wm-opacity')?.value || '15');
+    const rotation = parseInt(document.getElementById('et-wm-rotation')?.value || '-45');
+    const position = document.getElementById('et-wm-position')?.value || 'center';
+    const color = document.getElementById('et-wm-color')?.value || '#888888';
+    ctx.save(); ctx.globalAlpha = opPct / 100; ctx.font = `bold ${fontSize}px sans-serif`; ctx.fillStyle = color;
+    const rad = (rotation * Math.PI) / 180;
+    if (position === 'tiled') {
+        const tw = ctx.measureText(text).width; const stepX = tw + fontSize * 1.5; const stepY = fontSize * 3;
+        for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
+            for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
+                ctx.save(); ctx.translate(x, y); ctx.rotate(rad); ctx.fillText(text, 0, 0); ctx.restore();
+            }
+        }
+    } else {
+        const tw = ctx.measureText(text).width; let x, y;
+        switch (position) {
+            case 'top-left': x = fontSize * 0.5; y = fontSize * 1.5; break;
+            case 'top-right': x = canvas.width - tw - fontSize * 0.5; y = fontSize * 1.5; break;
+            case 'bottom-left': x = fontSize * 0.5; y = canvas.height - fontSize * 0.5; break;
+            case 'bottom-right': x = canvas.width - tw - fontSize * 0.5; y = canvas.height - fontSize * 0.5; break;
+            default: x = canvas.width / 2 - tw / 2; y = canvas.height / 2 + fontSize / 3; break;
+        }
+        ctx.translate(x + tw / 2, y - fontSize / 3); ctx.rotate(rad); ctx.fillText(text, -tw / 2, fontSize / 3);
+    }
+    ctx.restore();
+}
+
 async function execWatermark() {
     const text = document.getElementById('et-wm-text')?.value?.trim(); if (!text) return showToast('Enter watermark text.', 'warning');
     const size = parseInt(document.getElementById('et-wm-size')?.value || '50');
     const opacity = parseInt(document.getElementById('et-wm-opacity')?.value || '15') / 100;
+    const rotation = parseInt(document.getElementById('et-wm-rotation')?.value || '-45');
+    const position = document.getElementById('et-wm-position')?.value || 'center';
     const hex = document.getElementById('et-wm-color')?.value || '#888888';
     const r = parseInt(hex.slice(1, 3), 16) / 255, g = parseInt(hex.slice(3, 5), 16) / 255, b = parseInt(hex.slice(5, 7), 16) / 255;
     showProgress('Adding watermark...');
-    for (const page of currentPdfDoc.getPages()) { const { width, height } = page.getSize(); page.drawText(text, { x: width / 2 - (text.length * size * 0.3), y: height / 2, size, color: PDFLib.rgb(r, g, b), opacity, rotate: PDFLib.degrees(-45) }); }
+    for (const page of currentPdfDoc.getPages()) {
+        const { width, height } = page.getSize();
+        if (position === 'tiled') {
+            const textW = text.length * size * 0.3; const stepX = textW + size * 1.5; const stepY = size * 3;
+            for (let ty = 0; ty < height; ty += stepY) {
+                for (let tx = 0; tx < width; tx += stepX) {
+                    page.drawText(text, { x: tx, y: ty, size, color: PDFLib.rgb(r, g, b), opacity, rotate: PDFLib.degrees(rotation) });
+                }
+            }
+        } else {
+            const textW = text.length * size * 0.3; const margin = size * 0.5; let x, y;
+            switch (position) {
+                case 'top-left': x = margin; y = height - size - margin; break;
+                case 'top-right': x = width - textW - margin; y = height - size - margin; break;
+                case 'bottom-left': x = margin; y = margin + size * 0.5; break;
+                case 'bottom-right': x = width - textW - margin; y = margin + size * 0.5; break;
+                default: x = width / 2 - textW / 2; y = height / 2; break;
+            }
+            page.drawText(text, { x, y, size, color: PDFLib.rgb(r, g, b), opacity, rotate: PDFLib.degrees(rotation) });
+        }
+    }
     await renderAllPages(); hideProgress(); closeEditorToolPanel(); showToast('Watermark added.', 'success');
 }
 async function execCompress() {
-    const activeBtn = document.querySelector('.comp-opt.active');
-    const quality = parseFloat(activeBtn?.dataset?.q || '0.7');
     showProgress('Compressing...');
-    const bytes = await currentPdfDoc.save();
-    const pdf = await pdfjsLib.getDocument(bytes).promise;
-    const newDoc = await PDFLib.PDFDocument.create();
-    for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i); const vp = page.getViewport({ scale: 1.5 });
-        const canvas = document.createElement('canvas'); canvas.width = vp.width; canvas.height = vp.height;
-        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-        const img = await newDoc.embedJpg(canvas.toDataURL('image/jpeg', quality));
-        const origVp = page.getViewport({ scale: 1.0 });
-        const newPage = newDoc.addPage([origVp.width, origVp.height]);
-        newPage.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height });
+    const origBytes = await currentPdfDoc.save();
+    const originalSize = origBytes.length;
+    const pdf = await pdfjsLib.getDocument(origBytes).promise;
+    const totalPages = pdf.numPages;
+
+    // Get target size if specified
+    const targetValEl = document.getElementById('et-comp-target-val');
+    const targetUnitEl = document.getElementById('et-comp-target-unit');
+    const targetVal = parseFloat(targetValEl?.value || '0');
+    const targetUnit = targetUnitEl?.value || 'MB';
+    let targetBytes = 0;
+    if (targetVal > 0) {
+        targetBytes = targetUnit === 'KB' ? targetVal * 1024 : targetVal * 1024 * 1024;
     }
-    const newBytes = await newDoc.save();
-    currentPdfDoc = await PDFLib.PDFDocument.load(newBytes);
+
+    // Helper to compress at given quality & scale
+    async function compressAt(q, s) {
+        const newDoc = await PDFLib.PDFDocument.create();
+        for (let i = 1; i <= totalPages; i++) {
+            const page = await pdf.getPage(i);
+            const origVP = page.getViewport({ scale: 1.0 });
+            const renderVP = page.getViewport({ scale: s });
+            const canvas = document.createElement('canvas');
+            canvas.width = renderVP.width; canvas.height = renderVP.height;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: renderVP }).promise;
+            const img = await newDoc.embedJpg(canvas.toDataURL('image/jpeg', q));
+            const newPage = newDoc.addPage([origVP.width, origVP.height]);
+            newPage.drawImage(img, { x: 0, y: 0, width: origVP.width, height: origVP.height });
+        }
+        return await newDoc.save();
+    }
+
+    let resultBytes;
+
+    if (targetBytes <= 0) {
+        // Smart auto-compress
+        resultBytes = await compressAt(0.6, 1.0);
+    } else {
+        // Phase 1: Quality search at scale=1.0
+        let bestPdf = null, bestDiff = Infinity;
+        let lo = 0.01, hi = 0.95;
+        for (let i = 0; i < 10; i++) {
+            const qMid = (lo + hi) / 2;
+            const c = await compressAt(qMid, 1.0);
+            const diff = Math.abs(c.length - targetBytes);
+            if (diff < bestDiff) { bestPdf = c; bestDiff = diff; }
+            if (c.length <= targetBytes) lo = qMid; else hi = qMid;
+            if (diff < targetBytes * 0.02 || Math.abs(hi - lo) < 0.01) break;
+        }
+
+        if (bestPdf && bestPdf.length <= targetBytes * 1.03) {
+            resultBytes = bestPdf;
+        } else {
+            // Phase 2: Scale search
+            let sLo = 0.1, sHi = 1.0, foundScale = 0.5;
+            for (let i = 0; i < 8; i++) {
+                const sMid = (sLo + sHi) / 2;
+                const c = await compressAt(0.4, sMid);
+                const diff = Math.abs(c.length - targetBytes);
+                if (diff < bestDiff) { bestPdf = c; bestDiff = diff; }
+                if (c.length <= targetBytes) { foundScale = sMid; sLo = sMid; } else { sHi = sMid; }
+                if (diff < targetBytes * 0.03 || Math.abs(sHi - sLo) < 0.02) break;
+            }
+            // Phase 3: Refine quality at found scale
+            lo = 0.01; hi = 0.95;
+            for (let i = 0; i < 7; i++) {
+                const qMid = (lo + hi) / 2;
+                const c = await compressAt(qMid, foundScale);
+                const diff = Math.abs(c.length - targetBytes);
+                if (diff < bestDiff) { bestPdf = c; bestDiff = diff; }
+                if (c.length <= targetBytes) lo = qMid; else hi = qMid;
+                if (diff < targetBytes * 0.01 || Math.abs(hi - lo) < 0.01) break;
+            }
+            resultBytes = bestPdf;
+        }
+    }
+
+    currentPdfDoc = await PDFLib.PDFDocument.load(resultBytes);
     await renderAllPages(); hideProgress(); closeEditorToolPanel();
-    const saved = Math.round((1 - newBytes.length / bytes.length) * 100);
-    showToast(`Compressed: ${(bytes.length / 1024).toFixed(0)}KB → ${(newBytes.length / 1024).toFixed(0)}KB (${saved}% smaller)`, 'success');
+    const saved = Math.round((1 - resultBytes.length / originalSize) * 100);
+    const fromStr = originalSize > 1024 * 1024 ? (originalSize / 1024 / 1024).toFixed(2) + 'MB' : (originalSize / 1024).toFixed(0) + 'KB';
+    const toStr = resultBytes.length > 1024 * 1024 ? (resultBytes.length / 1024 / 1024).toFixed(2) + 'MB' : (resultBytes.length / 1024).toFixed(0) + 'KB';
+    showToast(`Compressed: ${fromStr} → ${toStr} (${saved}% smaller)`, 'success');
 }
 async function execPageNumbers() {
     const position = document.getElementById('et-pn-position')?.value || 'bottom-center';

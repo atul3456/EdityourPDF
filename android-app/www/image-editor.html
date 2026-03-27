@@ -1,0 +1,752 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Image Editor - EdityourPDF</title>
+    <meta name="description"
+        content="Free online PDF tools: edit, merge, compress, split, rotate, watermark, convert, OCR, and more. No signup required.">
+    <meta property="og:title" content="EdityourPDF - Free Online PDF Tools">
+    <meta property="og:description"
+        content="Edit, merge, compress, split, rotate, watermark, and convert PDFs online for free.">
+    <meta property="og:type" content="website">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Outfit:wght@300;400;600;700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF Lib (Cantoo fork for Encryption) -->
+    <script src="https://unpkg.com/@cantoo/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit@0.0.4"></script>
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <!-- PPTX Gen -->
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <!-- Docx -->
+    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+    <!-- Tesseract.js for Client-Side OCR -->
+    <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
+    <!-- JSZip for multi-file downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="style.css?v=7">
+    <!-- Generate Image Tool (standalone) -->
+    <link rel="stylesheet" href="generate-image.css?v=1">
+</head>
+
+<body>
+
+    <div class="background-mesh">
+        <div class="mesh-1"></div>
+        <div class="mesh-2"></div>
+        <div class="mesh-3"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <div class="app-container">
+
+        <!-- Main Content (Full Width) -->
+        <main class="glass-content full-width">
+
+            <!-- ===== SITE NAVBAR ===== -->
+            <nav class="site-navbar" id="site-navbar">
+                <div class="navbar-inner">
+                    <!-- Brand -->
+                    <a href="#" class="navbar-brand" id="nav-brand"
+                        onclick="event.preventDefault();document.querySelectorAll('.img-tool-section,#img-editor-dashboard').forEach(s=>s.classList.add('hidden'));document.getElementById('home-dashboard').classList.remove('hidden');">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>EdityourPDF</span>
+                    </a>
+
+                    <!-- Desktop Links -->
+                    <div class="navbar-links">
+                        <a href="index.html" class="nav-link" id="nav-pdf-tools">
+                            <i class="fa-solid fa-file-pdf"></i> PDF Tools
+                        </a>
+                        <a href="#" class="nav-link nav-link-highlight" id="nav-img-editor">
+                            <i class="fa-solid fa-image"></i> Image Editor
+                        </a>
+                        <a href="about.html" class="nav-link" id="nav-about">
+                            <i class="fa-solid fa-circle-info"></i> About
+                        </a>
+                        <a href="help.html" class="nav-link" id="nav-help">
+                            <i class="fa-solid fa-circle-question"></i> Help
+                        </a>
+                        <a href="feedback.html" class="nav-link" id="nav-feedback">
+                            <i class="fa-solid fa-comment-dots"></i> Feedback
+                        </a>
+                        <a href="donate.html" class="nav-link nav-link-donate" id="nav-donate">
+                            <i class="fa-solid fa-heart"></i> Donate
+                        </a>
+                        <!-- Support Dropdown -->
+                        <div class="nav-dropdown-wrap">
+                            <button class="nav-link nav-support-btn" id="nav-support-btn">
+                                <i class="fa-solid fa-share-nodes"></i> Support <i class="fa-solid fa-chevron-down"
+                                    style="font-size:0.7rem;margin-left:3px;"></i>
+                            </button>
+                            <div class="nav-dropdown" id="nav-support-dropdown">
+                                <a href="https://www.instagram.com" target="_blank" class="dropdown-item"><i
+                                        class="fa-brands fa-instagram" style="color:#e1306c;"></i> Instagram</a>
+                                <a href="https://www.facebook.com" target="_blank" class="dropdown-item"><i
+                                        class="fa-brands fa-facebook" style="color:#1877f2;"></i> Facebook</a>
+                                <a href="https://www.youtube.com" target="_blank" class="dropdown-item"><i
+                                        class="fa-brands fa-youtube" style="color:#ff0000;"></i> YouTube</a>
+                                <a href="https://www.twitter.com" target="_blank" class="dropdown-item"><i
+                                        class="fa-brands fa-x-twitter" style="color:#fff;"></i> Twitter / X</a>
+                                <a href="https://www.whatsapp.com" target="_blank" class="dropdown-item"><i
+                                        class="fa-brands fa-whatsapp" style="color:#25d366;"></i> WhatsApp</a>
+                                <a href="https://www.telegram.org" target="_blank" class="dropdown-item"><i
+                                        class="fa-brands fa-telegram" style="color:#229ed9;"></i> Telegram</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hamburger (mobile) -->
+                    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu"
+                        onclick="document.getElementById('nav-drawer').classList.add('open');document.getElementById('nav-drawer-overlay').classList.add('open');document.body.style.overflow='hidden';">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Mobile Drawer Overlay -->
+            <div class="nav-drawer-overlay" id="nav-drawer-overlay"
+                onclick="document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-drawer-overlay').classList.remove('open');document.body.style.overflow='';">
+            </div>
+
+            <!-- Mobile Drawer -->
+            <div class="nav-drawer" id="nav-drawer">
+                <div class="drawer-header">
+                    <span class="drawer-brand"><i class="fa-solid fa-layer-group"></i> EdityourPDF</span>
+                    <button class="drawer-close" id="nav-drawer-close"
+                        onclick="document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-drawer-overlay').classList.remove('open');document.body.style.overflow='';">✕</button>
+                </div>
+                <div class="drawer-links">
+                    <a href="index.html" class="drawer-link" id="drawer-pdf-tools"><i class="fa-solid fa-file-pdf"></i>
+                        PDF
+                        Tools</a>
+                    <a href="#" class="drawer-link" id="drawer-img-editor"><i class="fa-solid fa-image"></i> Image
+                        Editor</a>
+                    <div class="drawer-divider"></div>
+                    <a href="about.html" class="drawer-link" id="drawer-about"><i class="fa-solid fa-circle-info"></i>
+                        About
+                        Us</a>
+                    <a href="help.html" class="drawer-link" id="drawer-help"><i class="fa-solid fa-circle-question"></i>
+                        Help</a>
+                    <a href="feedback.html" class="drawer-link" id="drawer-feedback"><i
+                            class="fa-solid fa-comment-dots"></i>
+                        Feedback</a>
+                    <a href="donate.html" class="drawer-link nav-link-donate" id="drawer-donate"><i
+                            class="fa-solid fa-heart"></i>
+                        Donate Us</a>
+                    <div class="drawer-divider"></div>
+                    <p class="drawer-section-title">Follow Us</p>
+                    <div class="drawer-social">
+                        <a href="https://www.instagram.com" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.facebook.com" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-facebook"></i></a>
+                        <a href="https://www.youtube.com" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-youtube"></i></a>
+                        <a href="https://www.twitter.com" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-x-twitter"></i></a>
+                        <a href="https://www.whatsapp.com" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://www.telegram.org" target="_blank" class="social-chip"><i
+                                class="fa-brands fa-telegram"></i></a>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ===== IMAGE EDITOR DASHBOARD ===== -->
+            <section id="img-editor-dashboard" class="glass-content full-width flex-center">
+                <div style="width:100%;max-width:1200px;">
+                    <div style="text-align:center;margin-bottom:2rem;">
+                        <h2
+                            style="font-size:2rem;background:linear-gradient(135deg,#00e5ff,#ff0076);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+                            🖼️ Image Editor Tools</h2>
+                        <p style="color:#a5b4fc;">Professional image tools — all in your browser, no upload needed.</p>
+                    </div>
+                    <div class="home-grid" style="flex-wrap:wrap;justify-content:center;">
+                        <div class="tool-card large" id="img-card-compress">
+                            <i class="fa-solid fa-compress icon-large"></i>
+                            <h2>Compress Image</h2>
+                            <p>Reduce to exact KB/MB</p>
+                        </div>
+                        <div class="tool-card large" id="img-card-enhance">
+                            <i class="fa-solid fa-wand-sparkles icon-large"></i>
+                            <h2>Enhance Image</h2>
+                            <p>Brightness, contrast, sharpness</p>
+                        </div>
+                        <div class="tool-card large" id="img-card-edit">
+                            <i class="fa-solid fa-pen-to-square icon-large"></i>
+                            <h2>Edit Image</h2>
+                            <p>Crop, draw, text overlay</p>
+                        </div>
+                        <div class="tool-card large" id="img-card-resize">
+                            <i class="fa-solid fa-maximize icon-large"></i>
+                            <h2>Resize Image</h2>
+                            <p>Resize by px or percentage</p>
+                        </div>
+                        <div class="tool-card large" id="img-card-convert">
+                            <i class="fa-solid fa-arrows-rotate icon-large"></i>
+                            <h2>Convert Image</h2>
+                            <p>JPG ↔ PNG ↔ WebP ↔ BMP</p>
+                        </div>
+                        <div class="tool-card large" id="img-card-watermark">
+                            <i class="fa-solid fa-droplet icon-large"></i>
+                            <h2>Watermark Image</h2>
+                            <p>Add text watermark</p>
+                        </div>
+                        <div class="tool-card large" id="img-card-rotate">
+                            <i class="fa-solid fa-rotate icon-large"></i>
+                            <h2>Rotate &amp; Flip</h2>
+                            <p>Rotate 90°/180°, flip H/V</p>
+                        </div>
+
+                        <div class="tool-card large" id="img-card-addtext">
+                            <i class="fa-solid fa-font icon-large"></i>
+                            <h2>Add Text to Image</h2>
+                            <p>Styled text with live preview</p>
+                        </div>
+                        <!-- Generate Image card -->
+                        <div class="tool-card large" id="img-card-generate" style="border-color:rgba(167,139,250,0.4);">
+                            <i class="fa-solid fa-wand-magic-sparkles icon-large" style="color:#a78bfa;"></i>
+                            <h2
+                                style="background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+                                Generate Image</h2>
+                            <p>AI art from your text ✨</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== IMAGE TOOL SECTIONS ===== -->
+
+            <!-- IMG COMPRESS -->
+            <section id="img-compress-section" class="glass-content full-width flex-center hidden img-tool-section">
+                <div class="center-box">
+                    <h2><i class="fa-solid fa-compress" style="color:#00e5ff;"></i> Compress Image</h2>
+                    <p style="color:#a5b4fc;font-size:0.9rem;margin-bottom:15px;">Target an exact file size in KB or MB
+                        using smart quality adjustment.</p>
+                    <div class="upload-zone" id="img-compress-drop-zone">
+                        <i class="fa-solid fa-image"></i>
+                        <p>Drop image here or tap to select</p>
+                        <input type="file" id="img-compress-input" accept="image/*" hidden>
+                    </div>
+                    <div id="img-compress-file-info"
+                        style="display:none;color:#a5b4fc;margin-top:10px;font-size:0.9rem;"></div>
+                    <div id="img-compress-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;max-width:420px;margin-top:15px;">
+                        <h4>Target File Size</h4>
+                        <div style="display:flex;gap:10px;margin:12px 0;">
+                            <input type="number" id="img-compress-target-val" placeholder="e.g. 200" class="glass-input"
+                                style="flex:1;">
+                            <select id="img-compress-target-unit" class="glass-select" style="width:90px;">
+                                <option value="KB">KB</option>
+                                <option value="MB">MB</option>
+                            </select>
+                        </div>
+                        <div id="img-compress-spinner" class="spinner hidden" style="margin:10px auto;"></div>
+                        <div id="img-compress-status"
+                            style="display:none;color:#a5b4fc;font-size:0.9rem;margin-bottom:10px;"></div>
+                        <button id="btn-process-img-compress" class="glass-btn primary" style="width:100%;"><i
+                                class="fa-solid fa-compress"></i> Compress Now</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-img-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back</button>
+                </div>
+            </section>
+
+            <!-- IMG ENHANCE -->
+            <section id="img-enhance-section" class="glass-content full-width flex-center hidden img-tool-section">
+                <div class="center-box" style="max-width:750px;">
+                    <h2><i class="fa-solid fa-wand-sparkles" style="color:#00e5ff;"></i> Enhance Image</h2>
+                    <div class="upload-zone" id="img-enhance-drop-zone">
+                        <i class="fa-regular fa-image"></i>
+                        <p>Drop image or tap to select</p>
+                        <input type="file" id="img-enhance-input" accept="image/*" hidden>
+                    </div>
+                    <div id="img-enhance-preview" class="hidden" style="margin-top:15px;width:100%;">
+                        <canvas id="img-enhance-canvas"
+                            style="width:100%;border-radius:12px;max-height:400px;object-fit:contain;"></canvas>
+                    </div>
+                    <div id="img-enhance-controls" class="hidden glass-panel"
+                        style="padding:20px;width:100%;margin-top:15px;">
+                        <div class="enhance-sliders">
+                            <div class="slider-row"><label>Brightness <span
+                                        id="enh-brightness-val">100%</span></label><input type="range"
+                                    id="enh-brightness" min="0" max="300" value="100" class="img-slider"></div>
+                            <div class="slider-row"><label>Contrast <span
+                                        id="enh-contrast-val">100%</span></label><input type="range" id="enh-contrast"
+                                    min="0" max="300" value="100" class="img-slider"></div>
+                            <div class="slider-row"><label>Saturation <span
+                                        id="enh-saturate-val">100%</span></label><input type="range" id="enh-saturate"
+                                    min="0" max="300" value="100" class="img-slider"></div>
+                            <div class="slider-row"><label>Sharpness <span id="enh-sharp-val">0%</span></label><input
+                                    type="range" id="enh-sharp" min="0" max="100" value="0" class="img-slider"></div>
+                            <div class="slider-row"><label>Sepia <span id="enh-sepia-val">0%</span></label><input
+                                    type="range" id="enh-sepia" min="0" max="100" value="0" class="img-slider"></div>
+                            <div class="slider-row"><label>Hue Rotate <span id="enh-hue-val">0°</span></label><input
+                                    type="range" id="enh-hue" min="0" max="360" value="0" class="img-slider"></div>
+                            <div class="slider-row"><label>Blur <span id="enh-blur-val">0px</span></label><input
+                                    type="range" id="enh-blur" min="0" max="20" value="0" class="img-slider"></div>
+                        </div>
+                        <div style="display:flex;gap:10px;margin-top:15px;flex-wrap:wrap;">
+                            <button id="btn-reset-enhance" class="glass-btn secondary" style="flex:1;"><i
+                                    class="fa-solid fa-rotate-left"></i> Reset</button>
+                            <button id="btn-download-enhance" class="glass-btn primary" style="flex:1;"><i
+                                    class="fa-solid fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-img-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back</button>
+                </div>
+            </section>
+
+            <!-- IMG EDIT -->
+            <section id="img-edit-section" class="glass-content full-width flex-center hidden img-tool-section">
+                <div class="center-box" style="max-width:780px;">
+                    <h2><i class="fa-solid fa-pen-to-square" style="color:#00e5ff;"></i> Edit Image</h2>
+                    <div class="upload-zone" id="img-edit-drop-zone">
+                        <i class="fa-regular fa-image"></i>
+                        <p>Drop image or tap to select</p>
+                        <input type="file" id="img-edit-input" accept="image/*" hidden>
+                    </div>
+                    <div id="img-edit-workspace" class="hidden" style="width:100%;">
+                        <!-- Mode toolbar -->
+                        <div class="img-edit-toolbar">
+                            <button class="edit-mode-btn glass-btn secondary small" id="edit-mode-none"
+                                title="Select"><i class="fa-solid fa-arrow-pointer"></i></button>
+                            <button class="edit-mode-btn glass-btn secondary small" id="edit-mode-draw" title="Draw"><i
+                                    class="fa-solid fa-pen"></i> Draw</button>
+                            <button class="edit-mode-btn glass-btn secondary small" id="edit-mode-text"
+                                title="Add Text"><i class="fa-solid fa-font"></i> Text</button>
+                            <button class="edit-mode-btn glass-btn secondary small" id="edit-mode-crop" title="Crop"><i
+                                    class="fa-solid fa-crop-simple"></i> Crop</button>
+                            <button class="glass-btn secondary small" id="edit-rotate-cw" title="Rotate CW"><i
+                                    class="fa-solid fa-rotate-right"></i></button>
+                            <button class="glass-btn secondary small" id="edit-rotate-ccw" title="Rotate CCW"><i
+                                    class="fa-solid fa-rotate-left"></i></button>
+                            <button class="glass-btn secondary small" id="edit-flip-h" title="Flip Horizontal"><i
+                                    class="fa-solid fa-arrows-left-right"></i></button>
+                            <button class="glass-btn secondary small" id="edit-flip-v" title="Flip Vertical"><i
+                                    class="fa-solid fa-arrows-up-down"></i></button>
+                            <button class="glass-btn secondary small" id="edit-undo" title="Undo"><i
+                                    class="fa-solid fa-undo"></i></button>
+                            <button class="glass-btn secondary small" id="edit-reset" title="Reset"><i
+                                    class="fa-solid fa-trash-restore"></i> Reset</button>
+                        </div>
+                        <!-- Draw options -->
+                        <div id="edit-draw-options" class="hidden"
+                            style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 0;">
+                            <label style="color:#a5b4fc;font-size:0.85rem;">Color:</label>
+                            <input type="color" id="edit-draw-color" value="#ff0076">
+                            <label style="color:#a5b4fc;font-size:0.85rem;">Size:</label>
+                            <input type="range" id="edit-draw-size" min="1" max="40" value="4" style="width:100px;">
+                        </div>
+                        <!-- Text options -->
+                        <div id="edit-text-options" class="hidden"
+                            style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 0;">
+                            <input type="text" id="edit-text-content" placeholder="Your text..." class="glass-input"
+                                style="flex:1;min-width:120px;">
+                            <input type="color" id="edit-text-color-pick" value="#ffffff">
+                            <input type="range" id="edit-text-size-pick" min="12" max="120" value="32"
+                                style="width:80px;">
+                            <span id="edit-text-size-val" style="color:#a5b4fc;font-size:0.85rem;">32px</span>
+                        </div>
+                        <!-- Crop options -->
+                        <div id="edit-crop-options" class="hidden" style="padding:10px 0;">
+                            <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+                                <button id="crop-mode-free-btn" class="glass-btn primary small"
+                                    onclick="cropSetMode('free')">
+                                    <i class="fa-solid fa-vector-square"></i> Free Crop
+                                </button>
+                                <button id="crop-mode-ratio-btn" class="glass-btn secondary small"
+                                    onclick="cropSetMode('ratio')">
+                                    <i class="fa-solid fa-crop"></i> Aspect Ratio
+                                </button>
+                                <button id="btn-crop-apply" class="glass-btn primary small" style="margin-left:auto;">
+                                    <i class="fa-solid fa-check"></i> Apply Crop
+                                </button>
+                            </div>
+                            <!-- Ratio presets -->
+                            <div id="crop-ratio-presets" class="hidden"
+                                style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                                <button class="glass-btn secondary small crop-ratio-btn" data-ratio="1:1">⬜ 1:1</button>
+                                <button class="glass-btn secondary small crop-ratio-btn" data-ratio="4:3">🖼️
+                                    4:3</button>
+                                <button class="glass-btn secondary small crop-ratio-btn" data-ratio="16:9">📺
+                                    16:9</button>
+                                <button class="glass-btn secondary small crop-ratio-btn" data-ratio="3:4">📱
+                                    3:4</button>
+                                <button class="glass-btn secondary small crop-ratio-btn" data-ratio="9:16">📱
+                                    9:16</button>
+                                <button class="glass-btn secondary small crop-ratio-btn" data-ratio="1.41:1">📄
+                                    A4</button>
+                                <button class="glass-btn secondary small crop-ratio-btn" data-ratio="1:1.41">📄 A4
+                                    Port</button>
+                                <button class="glass-btn secondary small crop-ratio-btn" data-ratio="2:1">🎞️
+                                    2:1</button>
+                            </div>
+                            <div id="crop-info-bar" style="color:#a5b4fc;font-size:0.82rem;min-height:18px;"></div>
+                        </div>
+                        <!-- Canvas and Crop Container -->
+                        <div class="img-canvas-scroll" style="position:relative;display:inline-block;">
+                            <canvas id="img-edit-canvas"
+                                style="max-width:100%;border-radius:10px;touch-action:none;"></canvas>
+                            <!-- Crop Overlay Wrapper -->
+                            <div id="img-crop-container" class="hidden"
+                                style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;border-radius:10px;pointer-events:none;touch-action:none;user-select:none;">
+                                <!-- Dimming overlays -->
+                                <div class="crop-dim" id="crop-dim-top" style="pointer-events:auto;"></div>
+                                <div class="crop-dim" id="crop-dim-bottom" style="pointer-events:auto;"></div>
+                                <div class="crop-dim" id="crop-dim-left" style="pointer-events:auto;"></div>
+                                <div class="crop-dim" id="crop-dim-right" style="pointer-events:auto;"></div>
+                                <!-- Crop box -->
+                                <div id="crop-box-el"
+                                    style="position:absolute;border:2px solid #00e5ff;box-sizing:border-box;cursor:move;pointer-events:auto;">
+                                    <div class="crop-grid-line crop-grid-v1"></div>
+                                    <div class="crop-grid-line crop-grid-v2"></div>
+                                    <div class="crop-grid-line crop-grid-h1"></div>
+                                    <div class="crop-grid-line crop-grid-h2"></div>
+                                    <div class="crop-h" data-h="nw"></div>
+                                    <div class="crop-h" data-h="n"></div>
+                                    <div class="crop-h" data-h="ne"></div>
+                                    <div class="crop-h" data-h="e"></div>
+                                    <div class="crop-h" data-h="se"></div>
+                                    <div class="crop-h" data-h="s"></div>
+                                    <div class="crop-h" data-h="sw"></div>
+                                    <div class="crop-h" data-h="w"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+                            <button id="btn-download-edit" class="glass-btn primary" style="flex:1;"><i
+                                    class="fa-solid fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-img-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back</button>
+                </div>
+            </section>
+
+            <!-- IMG RESIZE -->
+            <section id="img-resize-section" class="glass-content full-width flex-center hidden img-tool-section">
+                <div class="center-box">
+                    <h2><i class="fa-solid fa-maximize" style="color:#00e5ff;"></i> Resize Image</h2>
+                    <div class="upload-zone" id="img-resize-drop-zone">
+                        <i class="fa-regular fa-image"></i>
+                        <p>Drop image or tap to select</p>
+                        <input type="file" id="img-resize-input" accept="image/*" hidden>
+                    </div>
+                    <div id="img-resize-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;max-width:420px;margin-top:15px;">
+                        <p id="img-resize-orig-info" style="color:#a5b4fc;font-size:0.85rem;margin-bottom:12px;"></p>
+                        <div style="display:flex;gap:15px;margin-bottom:15px;">
+                            <label style="color:#fff;"><input type="radio" name="resize-mode" value="px" checked>
+                                Pixels</label>
+                            <label style="color:#fff;"><input type="radio" name="resize-mode" value="pct">
+                                Percentage</label>
+                        </div>
+                        <div id="resize-px-inputs" style="display:flex;gap:10px;align-items:center;">
+                            <div style="flex:1;"><label style="color:#a5b4fc;font-size:0.8rem;">Width</label><input
+                                    type="number" id="img-resize-w" class="glass-input" style="width:100%;"></div>
+                            <span style="color:#fff;margin-top:15px;">×</span>
+                            <div style="flex:1;"><label style="color:#a5b4fc;font-size:0.8rem;">Height</label><input
+                                    type="number" id="img-resize-h" class="glass-input" style="width:100%;"></div>
+                        </div>
+                        <div id="resize-pct-input" style="margin-top:10px;">
+                            <label style="color:#a5b4fc;font-size:0.85rem;">Scale %</label>
+                            <input type="number" id="img-resize-pct" value="50" class="glass-input"
+                                style="width:100%;margin-top:5px;">
+                        </div>
+                        <button id="btn-process-img-resize" class="glass-btn primary"
+                            style="width:100%;margin-top:15px;"><i class="fa-solid fa-download"></i> Resize &amp;
+                            Download</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-img-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back</button>
+                </div>
+            </section>
+
+            <!-- IMG CONVERT -->
+            <section id="img-convert-section" class="glass-content full-width flex-center hidden img-tool-section">
+                <div class="center-box">
+                    <h2><i class="fa-solid fa-arrows-rotate" style="color:#00e5ff;"></i> Convert Image</h2>
+                    <div class="upload-zone" id="img-convert-drop-zone">
+                        <i class="fa-regular fa-image"></i>
+                        <p>Drop image or tap to select</p>
+                        <input type="file" id="img-convert-input" accept="image/*" hidden>
+                    </div>
+                    <div id="img-convert-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;max-width:400px;margin-top:15px;">
+                        <p id="img-convert-file-name" style="color:#a5b4fc;font-size:0.85rem;margin-bottom:12px;"></p>
+                        <h4>Convert To</h4>
+                        <select id="img-convert-format" class="glass-select" style="width:100%;margin:10px 0;">
+                            <option value="jpg">JPEG (.jpg)</option>
+                            <option value="png">PNG (.png)</option>
+                            <option value="webp">WebP (.webp)</option>
+                            <option value="bmp">BMP (.bmp)</option>
+                        </select>
+                        <button id="btn-process-img-convert" class="glass-btn primary"
+                            style="width:100%;margin-top:10px;"><i class="fa-solid fa-download"></i> Convert &amp;
+                            Download</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-img-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back</button>
+                </div>
+            </section>
+
+            <!-- IMG WATERMARK -->
+            <section id="img-watermark-section" class="glass-content full-width flex-center hidden img-tool-section">
+                <div class="center-box">
+                    <h2><i class="fa-solid fa-droplet" style="color:#00e5ff;"></i> Watermark Image</h2>
+                    <div class="upload-zone" id="img-watermark-drop-zone">
+                        <i class="fa-regular fa-image"></i>
+                        <p>Drop image or tap to select</p>
+                        <input type="file" id="img-watermark-input" accept="image/*" hidden>
+                    </div>
+                    <div id="img-watermark-options" class="hidden glass-panel"
+                        style="padding:20px;width:100%;max-width:520px;margin-top:15px;">
+                        <p id="img-watermark-file-name" style="color:#a5b4fc;font-size:0.85rem;margin-bottom:12px;"></p>
+
+                        <!-- Mode Tabs -->
+                        <div style="display:flex;gap:8px;margin-bottom:16px;">
+                            <button id="wm-tab-diagonal" class="glass-btn primary" style="flex:1;"
+                                onclick="wmSwitchTab('diagonal')">
+                                <i class="fa-solid fa-angles-right"></i> Diagonal
+                            </button>
+                            <button id="wm-tab-tiled" class="glass-btn secondary" style="flex:1;"
+                                onclick="wmSwitchTab('tiled')">
+                                <i class="fa-solid fa-border-all"></i> Tiled Pattern
+                            </button>
+                        </div>
+
+                        <!-- Text -->
+                        <label style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:4px;">Watermark
+                            Text</label>
+                        <input type="text" id="img-wm-text" placeholder="e.g. © MyBrand 2025" value="CONFIDENTIAL"
+                            class="glass-input" style="width:100%;margin-bottom:10px;">
+
+                        <!-- Font Family -->
+                        <label style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:4px;">Font</label>
+                        <select id="img-wm-font" class="glass-select" style="width:100%;margin-bottom:10px;">
+                            <option value="Arial">Arial</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Courier New">Courier New (Mono)</option>
+                            <option value="Impact" selected>Impact</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                        </select>
+
+                        <!-- Style checkboxes -->
+                        <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+                            <label style="color:#fff;display:flex;align-items:center;gap:5px;font-size:0.85rem;">
+                                <input type="checkbox" id="img-wm-bold" checked> Bold
+                            </label>
+                            <label style="color:#fff;display:flex;align-items:center;gap:5px;font-size:0.85rem;">
+                                <input type="checkbox" id="img-wm-italic"> Italic
+                            </label>
+                            <label style="color:#fff;display:flex;align-items:center;gap:5px;font-size:0.85rem;">
+                                <input type="checkbox" id="img-wm-shadow"> Shadow
+                            </label>
+                            <label style="color:#fff;display:flex;align-items:center;gap:5px;font-size:0.85rem;">
+                                <input type="checkbox" id="img-wm-outline"> Outline
+                            </label>
+                        </div>
+
+                        <!-- Color row -->
+                        <div style="display:flex;gap:14px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+                            <div>
+                                <label style="color:#a5b4fc;font-size:0.8rem;display:block;margin-bottom:3px;">Fill
+                                    Color</label>
+                                <input type="color" id="img-wm-color" value="#ffffff"
+                                    style="width:48px;height:30px;border-radius:6px;cursor:pointer;border:none;">
+                            </div>
+                            <div>
+                                <label style="color:#a5b4fc;font-size:0.8rem;display:block;margin-bottom:3px;">Outline
+                                    Color</label>
+                                <input type="color" id="img-wm-outline-color" value="#000000"
+                                    style="width:48px;height:30px;border-radius:6px;cursor:pointer;border:none;">
+                            </div>
+                        </div>
+
+                        <!-- Size slider -->
+                        <div class="slider-row" style="margin-bottom:10px;">
+                            <label>Font Size <span id="img-wm-size-val">60</span>px</label>
+                            <input type="range" class="img-slider" id="img-wm-size" min="10" max="200" value="60">
+                        </div>
+
+                        <!-- Opacity slider -->
+                        <div class="slider-row" style="margin-bottom:10px;">
+                            <label>Opacity <span id="img-wm-opacity-val">40</span>%</label>
+                            <input type="range" class="img-slider" id="img-wm-opacity" min="5" max="100" value="40">
+                        </div>
+
+                        <!-- DIAGONAL-only: Angle -->
+                        <div id="wm-angle-row" class="slider-row" style="margin-bottom:10px;">
+                            <label>Angle <span id="img-wm-angle-val">-35</span>°</label>
+                            <input type="range" class="img-slider" id="img-wm-angle" min="-90" max="90" value="-35">
+                        </div>
+
+                        <!-- TILED-only: Spacing & Tile angle -->
+                        <div id="wm-tiled-rows" class="hidden">
+                            <div class="slider-row" style="margin-bottom:10px;">
+                                <label>Horizontal Gap <span id="img-wm-hspace-val">120</span>px</label>
+                                <input type="range" class="img-slider" id="img-wm-hspace" min="20" max="500"
+                                    value="120">
+                            </div>
+                            <div class="slider-row" style="margin-bottom:10px;">
+                                <label>Vertical Gap <span id="img-wm-vspace-val">80</span>px</label>
+                                <input type="range" class="img-slider" id="img-wm-vspace" min="20" max="400" value="80">
+                            </div>
+                            <div class="slider-row" style="margin-bottom:10px;">
+                                <label>Tile Angle <span id="img-wm-tile-angle-val">-25</span>°</label>
+                                <input type="range" class="img-slider" id="img-wm-tile-angle" min="-90" max="90"
+                                    value="-25">
+                            </div>
+                        </div>
+
+                        <!-- Live preview -->
+                        <div style="margin:14px 0 6px;">
+                            <label style="color:#a5b4fc;font-size:0.82rem;display:block;margin-bottom:6px;">Live
+                                Preview</label>
+                            <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:6px;">
+                                <canvas id="img-wm-preview-canvas"
+                                    style="width:100%;border-radius:8px;display:block;"></canvas>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;gap:10px;margin-top:10px;">
+                            <button id="btn-wm-preview" class="glass-btn secondary" style="flex:1;">
+                                <i class="fa-solid fa-eye"></i> Preview
+                            </button>
+                            <button id="btn-process-img-watermark" class="glass-btn primary" style="flex:1;">
+                                <i class="fa-solid fa-download"></i> Apply &amp; Download
+                            </button>
+                        </div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-img-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back</button>
+                </div>
+            </section>
+
+            <!-- IMG ROTATE & FLIP -->
+            <section id="img-rotate-section" class="glass-content full-width flex-center hidden img-tool-section">
+                <div class="center-box">
+                    <h2><i class="fa-solid fa-rotate" style="color:#00e5ff;"></i> Rotate &amp; Flip</h2>
+                    <div class="upload-zone" id="img-rotate-drop-zone">
+                        <i class="fa-regular fa-image"></i>
+                        <p>Drop image or tap to select</p>
+                        <input type="file" id="img-rotate-input" accept="image/*" hidden>
+                    </div>
+                    <div id="img-rotate-workspace" class="hidden" style="width:100%;max-width:550px;">
+                        <img id="img-rotate-preview" style="width:100%;border-radius:12px;margin:15px 0;" alt="Preview">
+                        <div class="img-action-grid">
+                            <button id="btn-rot-cw" class="glass-btn secondary"><i class="fa-solid fa-rotate-right"></i>
+                                90° CW</button>
+                            <button id="btn-rot-ccw" class="glass-btn secondary"><i class="fa-solid fa-rotate-left"></i>
+                                90° CCW</button>
+                            <button id="btn-rot-180" class="glass-btn secondary"><i class="fa-solid fa-rotate"></i>
+                                180°</button>
+                            <button id="btn-flip-h" class="glass-btn secondary"><i
+                                    class="fa-solid fa-arrows-left-right"></i> Flip H</button>
+                            <button id="btn-flip-v" class="glass-btn secondary"><i
+                                    class="fa-solid fa-arrows-up-down"></i> Flip V</button>
+                            <button id="btn-download-rotate" class="glass-btn primary"><i
+                                    class="fa-solid fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                    <button class="glass-btn secondary btn-back-img-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back</button>
+                </div>
+            </section>
+
+
+            <!-- IMG ADD TEXT -->
+            <section id="img-addtext-section" class="glass-content full-width flex-center hidden img-tool-section">
+                <div class="center-box" style="max-width:780px;">
+                    <h2><i class="fa-solid fa-font" style="color:#00e5ff;"></i> Add Text to Image</h2>
+                    <div class="upload-zone" id="img-addtext-drop-zone">
+                        <i class="fa-regular fa-image"></i>
+                        <p>Drop image or tap to select</p>
+                        <input type="file" id="img-addtext-input" accept="image/*" hidden>
+                    </div>
+                    <div id="img-addtext-workspace" class="hidden" style="width:100%;">
+                        <div class="glass-panel" style="padding:20px;margin:15px 0;">
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                                <input type="text" id="at-text" placeholder="Your text..." class="glass-input"
+                                    style="flex:2;min-width:120px;">
+                                <input type="color" id="at-color" value="#ffffff">
+                                <input type="number" id="at-size" value="48" class="glass-input" style="width:70px;"
+                                    placeholder="Size">
+                                <select id="at-font" class="glass-select" style="width:120px;">
+                                    <option value="Outfit">Outfit</option>
+                                    <option value="Poppins">Poppins</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Arial">Arial</option>
+                                    <option value="Courier New">Courier</option>
+                                </select>
+                                <label style="color:#fff;"><input type="checkbox" id="at-bold"> Bold</label>
+                                <label style="color:#fff;"><input type="checkbox" id="at-italic"> Italic</label>
+                            </div>
+                            <div style="display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap;">
+                                <label style="color:#a5b4fc;font-size:0.85rem;">X pos %:</label>
+                                <input type="number" id="at-x" value="50" class="glass-input" style="width:70px;">
+                                <label style="color:#a5b4fc;font-size:0.85rem;">Y pos %:</label>
+                                <input type="number" id="at-y" value="50" class="glass-input" style="width:70px;">
+                                <button id="btn-add-text-layer" class="glass-btn primary"><i
+                                        class="fa-solid fa-plus"></i> Add Text</button>
+                            </div>
+                        </div>
+                        <div class="img-canvas-scroll">
+                            <canvas id="img-addtext-canvas" style="max-width:100%;border-radius:10px;"></canvas>
+                        </div>
+                        <button id="btn-download-addtext" class="glass-btn primary"
+                            style="width:100%;margin-top:12px;"><i class="fa-solid fa-download"></i> Download</button>
+                    </div>
+                    <button class="glass-btn secondary btn-back-img-home" style="margin-top:20px;"><i
+                            class="fa-solid fa-arrow-left"></i> Back</button>
+                </div>
+            </section>
+
+
+
+
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <p><i class="fa-solid fa-shield-halved"></i> Your files are processed locally in your browser. Nothing
+                    is uploaded to any server.</p>
+                <p>© 2026 EdityourPDF — Free & Open Source PDF Tools</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="image-tools.js?v=3"></script>
+    <script src="generate-image.js?v=1"></script>
+
+</body>
+
+</html>
