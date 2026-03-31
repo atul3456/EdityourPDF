@@ -116,24 +116,20 @@
                     </div>
 
                     <!-- Hamburger (mobile) -->
-                    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu"
-                        onclick="document.getElementById('nav-drawer').classList.add('open');document.getElementById('nav-drawer-overlay').classList.add('open');document.body.style.overflow='hidden';">
+                    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu">
                         <span></span><span></span><span></span>
                     </button>
                 </div>
             </nav>
 
             <!-- Mobile Drawer Overlay -->
-            <div class="nav-drawer-overlay" id="nav-drawer-overlay"
-                onclick="document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-drawer-overlay').classList.remove('open');document.body.style.overflow='';">
-            </div>
+            <div class="nav-drawer-overlay" id="nav-drawer-overlay"></div>
 
             <!-- Mobile Drawer -->
             <div class="nav-drawer" id="nav-drawer">
                 <div class="drawer-header">
                     <span class="drawer-brand"><i class="fa-solid fa-layer-group"></i> EdityourPDF</span>
-                    <button class="drawer-close" id="nav-drawer-close"
-                        onclick="document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-drawer-overlay').classList.remove('open');document.body.style.overflow='';">✕</button>
+                    <button class="drawer-close" id="nav-drawer-close">✕</button>
                 </div>
                 <div class="drawer-links">
                     <a href="index.html" class="drawer-link" id="drawer-pdf-tools"><i class="fa-solid fa-file-pdf"></i>

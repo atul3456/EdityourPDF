@@ -1211,6 +1211,18 @@ document.addEventListener('DOMContentLoaded', () => {
         drawer?.classList.contains('open') ? closeDrawer() : openDrawer();
     });
     drawerOverlay?.addEventListener('click', closeDrawer);
+    document.getElementById('nav-drawer-close')?.addEventListener('click', closeDrawer);
+
+    // --- Support Dropdown ---
+    const supportBtn = document.getElementById('nav-support-btn');
+    const supportDropdown = document.getElementById('nav-support-dropdown');
+    if (supportBtn && supportDropdown) {
+        supportBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            supportDropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', () => supportDropdown.classList.remove('open'));
+    }
 
     // Close drawer when a nav link is clicked
     document.querySelectorAll('.nav-link, .drawer-link').forEach(l => {
