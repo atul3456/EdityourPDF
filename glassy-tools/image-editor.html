@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -67,8 +67,7 @@
             <nav class="site-navbar" id="site-navbar">
                 <div class="navbar-inner">
                     <!-- Brand -->
-                    <a href="#" class="navbar-brand" id="nav-brand"
-                        onclick="event.preventDefault();document.querySelectorAll('.img-tool-section,#img-editor-dashboard').forEach(s=>s.classList.add('hidden'));document.getElementById('home-dashboard').classList.remove('hidden');">
+                    <a href="index.html" class="navbar-brand" id="nav-brand">
                         <i class="fa-solid fa-layer-group"></i>
                         <span>EdityourPDF</span>
                     </a>
@@ -78,7 +77,7 @@
                         <a href="index.html" class="nav-link" id="nav-pdf-tools">
                             <i class="fa-solid fa-file-pdf"></i> PDF Tools
                         </a>
-                        <a href="#" class="nav-link nav-link-highlight" id="nav-img-editor">
+                        <a href="image-editor.html" class="nav-link nav-link-highlight" id="nav-img-editor">
                             <i class="fa-solid fa-image"></i> Image Editor
                         </a>
                         <a href="about.html" class="nav-link" id="nav-about">
@@ -140,7 +139,7 @@
                     <a href="index.html" class="drawer-link" id="drawer-pdf-tools"><i class="fa-solid fa-file-pdf"></i>
                         PDF
                         Tools</a>
-                    <a href="#" class="drawer-link" id="drawer-img-editor"><i class="fa-solid fa-image"></i> Image
+                    <a href="image-editor.html" class="drawer-link" id="drawer-img-editor"><i class="fa-solid fa-image"></i> Image
                         Editor</a>
                     <div class="drawer-divider"></div>
                     <a href="about.html" class="drawer-link" id="drawer-about"><i class="fa-solid fa-circle-info"></i>
@@ -746,6 +745,25 @@
     <!-- Scripts -->
     <script src="image-tools.js?v=3"></script>
     <script src="generate-image.js?v=1"></script>
+
+    <!-- Support Dropdown Wiring -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const supportBtn = document.getElementById('nav-support-btn');
+            const supportDropdown = document.getElementById('nav-support-dropdown');
+            if (supportBtn && supportDropdown) {
+                supportBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    supportDropdown.classList.toggle('open');
+                });
+                document.addEventListener('click', function (e) {
+                    if (!supportBtn.contains(e.target)) {
+                        supportDropdown.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 

@@ -9,6 +9,8 @@
         href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Outfit:wght@300;400;600;700&family=Poppins:wght@300;400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -19,28 +21,142 @@
         <div class="mesh-3"></div>
     </div>
 
-    <div class="app-container"
-        style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
-        <main class="glass-content" style="max-width: 800px; width: 100%; padding: 40px; text-align: center;">
-            <i class="fa-solid fa-layer-group" style="font-size: 4rem; color: #00e5ff; margin-bottom: 20px;"></i>
-            <h1
-                style="font-size: 2.5rem; margin-bottom: 20px; background: linear-gradient(135deg, #00e5ff, #8a2be2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
-                About EdityourPDF</h1>
-            <p style="color: #a5b4fc; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; text-align: justify;">
-                Welcome to EdityourPDF! We provide a comprehensive suite of powerful, free online & offline tools
-                designed to simplify
-                the way you work with PDFs and Images. From merging and splitting to advanced image filtering and format
-                conversion,
-                we pride ourselves on offering a beautifully designed, completely secure, and fully client-side
-                experience.
-                Your files never leave your device unless required by advanced AI features, ensuring absolute privacy.
-            </p>
-            <a href="index.html" class="glass-btn primary"
-                style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-            </a>
+    <div class="app-container">
+        <main class="glass-content full-width">
+
+            <!-- ===== SITE NAVBAR ===== -->
+            <nav class="site-navbar" id="site-navbar">
+                <div class="navbar-inner">
+                    <a href="index.html" class="navbar-brand" id="nav-brand">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>EdityourPDF</span>
+                    </a>
+                    <div class="navbar-links">
+                        <a href="index.html" class="nav-link" id="nav-pdf-tools">
+                            <i class="fa-solid fa-file-pdf"></i> PDF Tools
+                        </a>
+                        <a href="image-editor.html" class="nav-link" id="nav-img-editor">
+                            <i class="fa-solid fa-image"></i> Image Editor
+                        </a>
+                        <a href="about.html" class="nav-link nav-link-highlight" id="nav-about">
+                            <i class="fa-solid fa-circle-info"></i> About
+                        </a>
+                        <a href="help.html" class="nav-link" id="nav-help">
+                            <i class="fa-solid fa-circle-question"></i> Help
+                        </a>
+                        <a href="feedback.html" class="nav-link" id="nav-feedback">
+                            <i class="fa-solid fa-comment-dots"></i> Feedback
+                        </a>
+                        <a href="donate.html" class="nav-link nav-link-donate" id="nav-donate">
+                            <i class="fa-solid fa-heart"></i> Donate
+                        </a>
+                        <div class="nav-dropdown-wrap">
+                            <button class="nav-link nav-support-btn" id="nav-support-btn">
+                                <i class="fa-solid fa-share-nodes"></i> Support <i class="fa-solid fa-chevron-down"
+                                    style="font-size:0.7rem;margin-left:3px;"></i>
+                            </button>
+                            <div class="nav-dropdown" id="nav-support-dropdown">
+                                <a href="https://www.instagram.com/matrixed._.atul._" target="_blank"
+                                    class="dropdown-item"><i class="fa-brands fa-instagram"
+                                        style="color:#e1306c;"></i> Instagram</a>
+                                <a href="https://x.com/atulv145112" target="_blank" class="dropdown-item"><i
+                                        class="fa-brands fa-x-twitter" style="color:#fff;"></i> X</a>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu"
+                        onclick="document.getElementById('nav-drawer').classList.add('open');document.getElementById('nav-drawer-overlay').classList.add('open');document.body.style.overflow='hidden';">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Mobile Drawer Overlay -->
+            <div class="nav-drawer-overlay" id="nav-drawer-overlay"
+                onclick="document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-drawer-overlay').classList.remove('open');document.body.style.overflow='';">
+            </div>
+
+            <!-- Mobile Drawer -->
+            <div class="nav-drawer" id="nav-drawer">
+                <div class="drawer-header">
+                    <span class="drawer-brand"><i class="fa-solid fa-layer-group"></i> EdityourPDF</span>
+                    <button class="drawer-close" id="nav-drawer-close"
+                        onclick="document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-drawer-overlay').classList.remove('open');document.body.style.overflow='';">✕</button>
+                </div>
+                <div class="drawer-links">
+                    <a href="index.html" class="drawer-link"><i class="fa-solid fa-file-pdf"></i> PDF Tools</a>
+                    <a href="image-editor.html" class="drawer-link"><i class="fa-solid fa-image"></i> Image Editor</a>
+                    <div class="drawer-divider"></div>
+                    <a href="about.html" class="drawer-link"><i class="fa-solid fa-circle-info"></i> About Us</a>
+                    <a href="help.html" class="drawer-link"><i class="fa-solid fa-circle-question"></i> Help</a>
+                    <a href="feedback.html" class="drawer-link"><i class="fa-solid fa-comment-dots"></i> Feedback</a>
+                    <a href="donate.html" class="drawer-link nav-link-donate"><i class="fa-solid fa-heart"></i> Donate Us</a>
+                    <div class="drawer-divider"></div>
+                    <p class="drawer-section-title">Follow Us</p>
+                    <div class="drawer-social">
+                        <a href="https://www.instagram.com/matrixed._.atul._" target="_blank" class="social-chip"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.facebook.com" target="_blank" class="social-chip"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="https://www.youtube.com" target="_blank" class="social-chip"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="https://x.com/atulv145112" target="_blank" class="social-chip"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="https://www.whatsapp.com" target="_blank" class="social-chip"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://www.telegram.org" target="_blank" class="social-chip"><i class="fa-brands fa-telegram"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <section class="glass-content full-width flex-center" style="padding-top: 0 !important; min-height: unset;">
+                <div style="max-width: 800px; width: 100%; padding: 40px; text-align: center;">
+                    <i class="fa-solid fa-layer-group" style="font-size: 4rem; color: #00e5ff; margin-bottom: 20px;"></i>
+                    <h1
+                        style="font-size: 2.5rem; margin-bottom: 20px; background: linear-gradient(135deg, #00e5ff, #8a2be2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                        About EdityourPDF</h1>
+                    <p style="color: #a5b4fc; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; text-align: justify;">
+                        Welcome to EdityourPDF! We provide a comprehensive suite of powerful, free online & offline tools
+                        designed to simplify
+                        the way you work with PDFs and Images. From merging and splitting to advanced image filtering and format
+                        conversion,
+                        we pride ourselves on offering a beautifully designed, completely secure, and fully client-side
+                        experience.
+                        Your files never leave your device unless required by advanced AI features, ensuring absolute privacy.
+                    </p>
+                    <a href="index.html" class="glass-btn primary"
+                        style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </section>
+
         </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <p><i class="fa-solid fa-shield-halved"></i> Your files are processed locally in your browser. Nothing
+                    is uploaded to any server.</p>
+                <p>© 2026 EdityourPDF — Free & Open Source PDF Tools</p>
+            </div>
+        </footer>
     </div>
+
+    <!-- Support Dropdown Wiring -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const supportBtn = document.getElementById('nav-support-btn');
+            const supportDropdown = document.getElementById('nav-support-dropdown');
+            if (supportBtn && supportDropdown) {
+                supportBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    supportDropdown.classList.toggle('open');
+                });
+                document.addEventListener('click', function (e) {
+                    if (!supportBtn.contains(e.target)) {
+                        supportDropdown.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

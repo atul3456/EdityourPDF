@@ -1217,16 +1217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         l.addEventListener('click', () => closeDrawer());
     });
 
-    // --- Support Dropdown ---
-    const supportBtn = document.getElementById('nav-support-btn');
-    const supportDropdown = document.getElementById('nav-support-dropdown');
-    supportBtn?.addEventListener('click', e => {
-        e.stopPropagation();
-        supportDropdown?.classList.toggle('open');
-    });
-    document.addEventListener('click', () => supportDropdown?.classList.remove('open'));
-
-    // --- Section Routing ---
+    // --- Section Routing (within the Image Editor page) ---
     function showSection(id) {
         const allSections = [
             'home-dashboard', 'img-editor-dashboard',
@@ -1247,31 +1238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo(0, 0);
     }
 
-    // Navbar PDF Tools
-    document.getElementById('nav-pdf-tools')?.addEventListener('click', e => {
-        e.preventDefault();
-        showSection('home-dashboard');
-        closeDrawer();
-    });
-    document.getElementById('drawer-pdf-tools')?.addEventListener('click', e => {
-        e.preventDefault();
-        showSection('home-dashboard');
-        closeDrawer();
-    });
-
-    // Navbar Image Editor
-    document.getElementById('nav-img-editor')?.addEventListener('click', e => {
-        e.preventDefault();
-        showSection('img-editor-dashboard');
-        closeDrawer();
-    });
-    document.getElementById('drawer-img-editor')?.addEventListener('click', e => {
-        e.preventDefault();
-        showSection('img-editor-dashboard');
-        closeDrawer();
-    });
-
-    // Image tool cards routing
+    // Image tool cards routing (these work within the single page)
     const imgRoutes = {
         'img-card-compress': 'img-compress-section',
         'img-card-enhance': 'img-enhance-section',
@@ -1302,18 +1269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Modals ---
-    function openModal(id) { document.getElementById(id)?.classList.remove('hidden'); }
-    function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
-
-    ['about', 'help', 'feedback', 'donate'].forEach(m => {
-        document.getElementById(`nav-${m}`)?.addEventListener('click', e => { e.preventDefault(); openModal(`modal-${m}`); closeDrawer(); });
-        document.getElementById(`drawer-${m}`)?.addEventListener('click', e => { e.preventDefault(); openModal(`modal-${m}`); closeDrawer(); });
-        document.getElementById(`close-modal-${m}`)?.addEventListener('click', () => closeModal(`modal-${m}`));
-        document.getElementById(`modal-${m}`)?.addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(`modal-${m}`); });
-    });
-
-    // Feedback form
+    // Feedback form (within the image-editor.html page if modal exists)
     document.getElementById('btn-send-feedback')?.addEventListener('click', async () => {
         const btn = document.getElementById('btn-send-feedback');
         const msg = document.getElementById('feedback-message')?.value?.trim();
@@ -1341,7 +1297,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (res.ok) {
                 imgShowToast('Thank you for your feedback! 🙏');
-                closeModal('modal-feedback');
                 document.getElementById('feedback-message').value = '';
                 document.getElementById('feedback-name').value = '';
                 document.querySelectorAll('.star-rating .star').forEach(s => s.classList.remove('active'));

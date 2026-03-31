@@ -67,8 +67,7 @@
             <nav class="site-navbar" id="site-navbar">
                 <div class="navbar-inner">
                     <!-- Brand -->
-                    <a href="#" class="navbar-brand" id="nav-brand"
-                        onclick="event.preventDefault();document.querySelectorAll('.img-tool-section,#img-editor-dashboard').forEach(s=>s.classList.add('hidden'));document.getElementById('home-dashboard').classList.remove('hidden');">
+                    <a href="index.html" class="navbar-brand" id="nav-brand">
                         <i class="fa-solid fa-layer-group"></i>
                         <span>EdityourPDF</span>
                     </a>
@@ -1497,7 +1496,7 @@
 
     <!-- Support Dropdown Wiring -->
     <script>
-        (function () {
+        document.addEventListener('DOMContentLoaded', function () {
             const supportBtn = document.getElementById('nav-support-btn');
             const supportDropdown = document.getElementById('nav-support-dropdown');
             if (supportBtn && supportDropdown) {
@@ -1505,11 +1504,13 @@
                     e.stopPropagation();
                     supportDropdown.classList.toggle('open');
                 });
-                document.addEventListener('click', function () {
-                    supportDropdown.classList.remove('open');
+                document.addEventListener('click', function (e) {
+                    if (!supportBtn.contains(e.target)) {
+                        supportDropdown.classList.remove('open');
+                    }
                 });
             }
-        })();
+        });
     </script>
 
 </body>
