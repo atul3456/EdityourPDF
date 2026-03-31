@@ -1494,25 +1494,6 @@
 
 
 
-    <!-- Support Dropdown Wiring -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const supportBtn = document.getElementById('nav-support-btn');
-            const supportDropdown = document.getElementById('nav-support-dropdown');
-            if (supportBtn && supportDropdown) {
-                supportBtn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    supportDropdown.classList.toggle('open');
-                });
-                document.addEventListener('click', function (e) {
-                    if (!supportBtn.contains(e.target)) {
-                        supportDropdown.classList.remove('open');
-                    }
-                });
-            }
-        });
-    </script>
-
 </body>
 
 </html>
