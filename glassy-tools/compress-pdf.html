@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="compress pdf, reduce pdf size, compress pdf to 100kb, compress pdf to 200kb, target pdf size, private pdf compressor, client side compress pdf">
+    <meta name="author" content="Atul">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://atul3456.github.io/EdityourPDF/glassy-tools/compress-pdf.html">
+    <title>Compress PDF File Size Online Free (Set Target MB/KB) | EdityourPDF</title>
+    <meta name="description"
+        content="Reduce PDF file size to exact target size (MB/KB) online. 100% free & private client-side compression engine — zero server uploads, complete privacy.">
+    <meta property="og:title" content="Compress PDF File Size Online Free - EdityourPDF">
+    <meta property="og:description"
+        content="Shrink PDF document file sizes accurately to hit target upload limits (MB/KB). 100% client-side processing.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://atul3456.github.io/EdityourPDF/glassy-tools/compress-pdf.html">
+    <meta property="og:site_name" content="EdityourPDF">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Compress PDF File Size Online Free - EdityourPDF">
+    <meta name="twitter:description" content="Compress PDFs to exact target file sizes directly inside your web browser. Fast and 100% private.">
+
+    <!-- Schema.org JSON-LD Structured Data for Compress PDF -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "EdityourPDF Compress Tool",
+      "url": "https://atul3456.github.io/EdityourPDF/glassy-tools/compress-pdf.html",
+      "description": "Smart PDF compressor allowing users to specify exact target file sizes in MB or KB locally.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All (Web Browser)",
+      "author": { "@type": "Person", "name": "Atul" },
+      "offers": { "@type": "Offer", "price": "0.00", "priceCurrency": "USD" }
+    }
+    </script>
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/@cantoo/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="style.css?v=7">
+</head>
+
+<body>
+    <div class="background-mesh">
+        <div class="mesh-1"></div>
+        <div class="mesh-2"></div>
+        <div class="mesh-3"></div>
+    </div>
+    <div id="toast-container"></div>
+
+    <div class="app-container">
+        <main class="glass-content full-width">
+            <!-- NAVBAR -->
+            <nav class="site-navbar">
+                <div class="navbar-inner">
+                    <a href="index.html" class="navbar-brand">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>EdityourPDF</span>
+                    </a>
+                    <div class="navbar-links">
+                        <a href="index.html" class="nav-link"><i class="fa-solid fa-file-pdf"></i> All PDF Tools</a>
+                        <a href="merge-pdf.html" class="nav-link"><i class="fa-solid fa-copy"></i> Merge PDF</a>
+                        <a href="compress-pdf.html" class="nav-link nav-link-highlight"><i class="fa-solid fa-compress"></i> Compress PDF</a>
+                        <a href="pdf-to-word.html" class="nav-link"><i class="fa-solid fa-file-word"></i> PDF to Word</a>
+                        <a href="pdf-ocr.html" class="nav-link"><i class="fa-solid fa-eye"></i> OCR</a>
+                        <a href="image-editor.html" class="nav-link"><i class="fa-solid fa-image"></i> Image Editor</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- HERO & COMPRESS TOOL BOX -->
+            <section class="glass-content full-width flex-center" style="padding:40px 20px;">
+                <div class="center-box" style="max-width:700px;width:100%;text-align:center;">
+                    <h1 style="font-size:2.4rem;margin-bottom:10px;font-family:var(--font-heading);">Compress & Reduce PDF File Size</h1>
+                    <p style="color:var(--text-muted);margin-bottom:30px;font-size:1.1rem;">
+                        Target exact file sizes (100KB, 200KB, 1MB, 2MB). <strong>100% Private Client-Side Processing</strong>.
+                    </p>
+
+                    <div class="upload-zone" id="compress-drop-zone" style="padding:40px 20px;border:2px dashed rgba(255,255,255,0.4);border-radius:16px;cursor:pointer;">
+                        <i class="fa-solid fa-compress" style="font-size:3.5rem;color:var(--accent-color);margin-bottom:15px;"></i>
+                        <h3 style="margin-bottom:8px;">Drop PDF file here to compress</h3>
+                        <p style="font-size:0.9rem;color:var(--text-muted);">Smart binary-search compressor to hit your target MB/KB size</p>
+                        <input type="file" id="compress-upload-input" accept=".pdf" hidden>
+                    </div>
+
+                    <a href="index.html" class="glass-btn secondary" style="margin-top:25px;display:inline-block;">
+                        <i class="fa-solid fa-arrow-left"></i> Explore All PDF Tools
+                    </a>
+                </div>
+            </section>
+
+            <!-- HOW IT WORKS & FAQ -->
+            <section style="max-width:900px;margin:40px auto;padding:0 20px;">
+                <div class="glass-panel" style="padding:30px;">
+                    <h2 style="font-size:1.8rem;margin-bottom:20px;">How Target PDF Compression Works</h2>
+                    <p style="line-height:1.8;color:var(--text-muted);margin-bottom:20px;">
+                        Many government application portals, job application forms, and email attachment systems impose strict upper file size limits (e.g. <em>"File size must not exceed 200KB"</em>). 
+                        Our client-side compression engine uses an automated dual-phase binary search algorithm to adjust resolution scale and image quality parameters, ensuring output files fall strictly under your target byte threshold while preserving maximum visual clarity.
+                    </p>
+
+                    <h2 style="font-size:1.8rem;margin-bottom:20px;">Frequently Asked Questions</h2>
+                    <div style="line-height:1.8;">
+                        <p><strong>Q: Will my confidential documents be uploaded to a server?</strong></p>
+                        <p style="color:var(--text-muted);margin-bottom:15px;">No. EdityourPDF performs 100% of its PDF rendering and compression inside your browser memory using WebAssembly and PDF.js. Zero data is sent to external servers.</p>
+
+                        <p><strong>Q: Can I compress a PDF to an exact target size like 100KB or 500KB?</strong></p>
+                        <p style="color:var(--text-muted);">Yes! Simply enter your desired numerical target value (in KB or MB) after uploading your document.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="pdf-manager.js"></script>
+    <script src="advanced-tools.js"></script>
+</body>
+</html>

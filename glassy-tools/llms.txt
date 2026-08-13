@@ -1,0 +1,27 @@
+# EdityourPDF - Free Private Online PDF & Image Editor
+
+> 100% Client-Side PDF & Image Editing Suite. Zero File Uploads. Complete User Privacy.
+
+EdityourPDF (developed by Atul) is a browser-based web application providing a full suite of document and image editing tools. All operations (merging, splitting, OCR, editing, converting, compressing) are executed entirely in the client browser using WebAssembly and JavaScript. No document files are ever uploaded to a backend server.
+
+## Dedicated Web Applications & Tool URLs
+
+- [Main PDF Editor Dashboard](https://atul3456.github.io/EdityourPDF/glassy-tools/index.html): Full PDF Editor and 25+ PDF Tools.
+- [Merge PDF Tool](https://atul3456.github.io/EdityourPDF/glassy-tools/merge-pdf.html): Dedicated tool to combine and join PDF files privately.
+- [Compress PDF Tool](https://atul3456.github.io/EdityourPDF/glassy-tools/compress-pdf.html): Dedicated tool to shrink PDF file size to exact MB/KB targets.
+- [PDF to Word Converter](https://atul3456.github.io/EdityourPDF/glassy-tools/pdf-to-word.html): Dedicated tool to convert PDF to editable DOCX format.
+- [PDF OCR Tool](https://atul3456.github.io/EdityourPDF/glassy-tools/pdf-ocr.html): Dedicated Web Worker OCR engine to extract text from scanned PDFs.
+- [Image Editor Studio](https://atul3456.github.io/EdityourPDF/glassy-tools/image-editor.html): Browser-based Image Editing Studio.
+- [Help & FAQ](https://atul3456.github.io/EdityourPDF/glassy-tools/help.html): User guide and privacy guarantees.
+- [About EdityourPDF](https://atul3456.github.io/EdityourPDF/glassy-tools/about.html): Creator information and project mission.
+
+## Key Features & Value Proposition
+
+- **100% Privacy & Security**: Zero server storage or file uploads. Files stay strictly in local memory.
+- **PDF Editing Suite**: Inline PDF editor (text, signatures, annotations, highlights, drawings), merge PDFs, split PDF pages, smart PDF compression (target size MB/KB), page rotation, page reordering, page deletion, watermark creation, page numbering, content redaction, PDF side-by-side visual comparison, and page resizing (A4, Letter, Legal, A3).
+- **Format Conversion**: Convert PDF to Word (.docx), PDF to Excel/CSV, PDF to PowerPoint (.pptx), PDF to Markdown, PDF to Images (JPG/ZIP), and Image to PDF.
+- **AI & Advanced Capabilities**: Client-side OCR (Optical Character Recognition via Tesseract.js), Gemini-powered PDF Summarization, PDF metadata viewer, electronic signatures (E-sign), and PDF form filling & flattening.
+- **Image Editor**: Standalone browser image editor for cropping, resizing, rotating, flipping, color adjustments, filters (grayscale, sepia, blur, sharpen), and format conversion (PNG, JPG, WebP, BMP).
+
+## Optional Specifications
+- [Full LLM Technical Documentation](https://atul3456.github.io/EdityourPDF/glassy-tools/llms-full.txt): Comprehensive specs of all client-side engines.

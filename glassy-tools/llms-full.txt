@@ -1,0 +1,64 @@
+# EdityourPDF Complete Technical Architecture & Tool Specification
+
+This document provides a comprehensive technical overview of EdityourPDF for Large Language Models (LLMs), AI assistants, search engines, and automated agents.
+
+## Application Architecture
+
+- **Hosting**: GitHub Pages (Static Web Hosting)
+- **Execution Model**: 100% Client-Side Web Application (Single-Page App with sub-pages)
+- **Frontend Stack**: HTML5, CSS3 (Glassmorphism design system), Vanilla JavaScript (ES6+)
+- **Core Libraries**:
+  - `pdf-lib` (@cantoo/pdf-lib fork): Low-level PDF document creation, page manipulation, text/image embedding, encryption, and flattening.
+  - `pdf.js` (Mozilla): Canvas-based PDF page rendering and thumbnail generation.
+  - `Tesseract.js`: Pure JavaScript OCR engine running in Web Worker threads for scanning text from images and raster PDFs.
+  - `PptxGenJS`: Client-side PowerPoint presentation generation (.pptx).
+  - `docx`: JavaScript library for generating Word documents (.docx).
+  - `JSZip`: Client-side ZIP archive creation for batch file exports.
+  - `Marked`: Fast markdown parsing for document conversions.
+
+## Complete Tool Roster & Functional Specifications
+
+### 1. Document Editing & Manipulation
+- **PDF Editor**: Inline Canvas editor allowing placement of text, custom signatures, freehand drawing, highlighter pens, and rectangular redaction overlays directly onto rendered PDF pages.
+- **Merge PDFs**: Combines array of PDF array buffers into a single consolidated PDF document preserving vector sharpness.
+- **Split PDF**: Extracts individual pages or custom ranges (e.g., "1-3, 5, 8-10") into separate PDF files or a bundled ZIP.
+- **Compress PDF**: Re-samples page canvas render resolution and applies JPEG stream compression to achieve target file sizes in MB or KB.
+- **Rotate Pages**: Applies page-level rotation transformations (90°, 180°, 270°) to all or selected pages.
+- **Watermark PDF**: Embeds text watermarks with customizable opacity, rotation angle, font color, size, and layout position across all pages.
+- **Add Page Numbers**: Renders dynamic page numbers ("Page X of Y" or standard numbers) with font customization and position selection.
+- **Reorder Pages**: Interactive drag-and-drop thumbnail grid for custom page re-sequencing.
+- **Delete Pages**: Visual page selector to remove unwanted pages.
+- **Redact Content**: Permanent blackouts rendered onto PDF pages.
+- **Compare PDFs**: Side-by-side visual diff tool highlighting document discrepancies.
+- **Resize Pages**: Converts PDF page aspect ratios to standard paper sizes (A4, Letter, Legal, A3, A5).
+
+### 2. Format Conversion Tools
+- **PDF to Word (.docx)**: Extracts page text content and generates structured DOCX documents.
+- **PDF to Excel (.xlsx / .csv)**: Identifies tabular text boundaries and exports structured CSV/Excel files.
+- **PDF to PowerPoint (.pptx)**: Renders PDF pages onto slide canvases inside PPTX presentations.
+- **PDF to Markdown**: Formats document headers, paragraphs, and list items into standard Markdown syntax.
+- **PDF to Images**: Renders pages at 300 DPI into downloadable PNG/JPG images.
+- **Image to PDF**: Wraps uploaded image files (JPG, PNG, WebP) into PDF page containers.
+
+### 3. AI & Advanced Utilities
+- **Optical Character Recognition (OCR)**: Scans unsearchable image PDFs using Tesseract.js and outputs extracted text.
+- **AI Document Summarizer**: Optional Gemini AI API integration to produce concise bulleted summaries of PDF text content.
+- **PDF Form Filler**: Detects interactive PDF form fields (AcroForms) for editing and flattening.
+- **E-Sign PDF**: Digital signature builder with canvas drawing and signature placement.
+
+### 4. Image Editing Studio (`image-editor.html`)
+- **Cropping & Resizing**: Freeform and aspect ratio cropping (1:1, 16:9, 4:3, 3:2), custom width/height adjustments.
+- **Color Adjustments**: Brightness, contrast, saturation, hue shift, exposure, and temperature fine-tuning.
+- **Filters & Effects**: Grayscale, sepia, invert, blur, sharpen, vintage, and noise filters.
+- **Format Converter**: Converts between PNG, JPG, WebP, and BMP with quality quality sliders.
+
+## Privacy & Security Compliance
+
+- **GDPR / CCPA / HIPAA Compliance**: Fully compliant by design. Because zero data leaves the user's browser, no personal health information (PHI), personally identifiable information (PII), or confidential documents are transmitted over networks or saved on servers.
+- **Offline Capability**: Once loaded, the web app can process documents offline without an active internet connection (except for optional external AI summary features).
+
+## Creator Contact & Social Links
+- Developer: Atul
+- GitHub Repository: https://github.com/atul3456/EdityourPDF
+- Instagram: https://www.instagram.com/matrixed._.atul._
+- X (Twitter): https://x.com/atulv145112

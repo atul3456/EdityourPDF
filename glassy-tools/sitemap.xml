@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- Home & Full PDF Tools Dashboard -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/index.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Dedicated SEO Landing Page: Merge PDF -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/merge-pdf.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- Dedicated SEO Landing Page: Compress PDF -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/compress-pdf.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- Dedicated SEO Landing Page: PDF to Word -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/pdf-to-word.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- Dedicated SEO Landing Page: PDF OCR -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/pdf-ocr.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <!-- Image Editor Studio -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/image-editor.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- Help & FAQ -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/help.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.80</priority>
+    </url>
+
+    <!-- About Us -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/about.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+
+    <!-- Feedback -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/feedback.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
+    </url>
+
+    <!-- Donate -->
+    <url>
+        <loc>https://atul3456.github.io/EdityourPDF/glassy-tools/donate.html</loc>
+        <lastmod>2026-08-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.50</priority>
+    </url>
+
+</urlset>

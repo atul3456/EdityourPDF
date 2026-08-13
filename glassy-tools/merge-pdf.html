@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="merge pdf, combine pdf files, join pdf pages, free pdf merger, private pdf merger, client side merge pdf, no upload pdf joiner">
+    <meta name="author" content="Atul">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://atul3456.github.io/EdityourPDF/glassy-tools/merge-pdf.html">
+    <title>Merge PDF Files Online Free - 100% Private (No File Uploads) | EdityourPDF</title>
+    <meta name="description"
+        content="Combine multiple PDF files into one document instantly in your browser. 100% free & private client-side processing — your files never leave your device.">
+    <meta property="og:title" content="Merge PDF Files Online Free (100% Private) - EdityourPDF">
+    <meta property="og:description"
+        content="Combine and join PDF files into a single PDF document in seconds. Zero server uploads, maximum document privacy.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://atul3456.github.io/EdityourPDF/glassy-tools/merge-pdf.html">
+    <meta property="og:site_name" content="EdityourPDF">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Merge PDF Files Online Free - EdityourPDF">
+    <meta name="twitter:description" content="Combine PDF files directly inside your web browser. Free, fast, and 100% private.">
+
+    <!-- Schema.org JSON-LD Structured Data for Merge PDF -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "EdityourPDF Merge Tool",
+      "url": "https://atul3456.github.io/EdityourPDF/glassy-tools/merge-pdf.html",
+      "description": "Combine multiple PDF documents into a single unified file locally in your browser.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All (Web Browser)",
+      "author": { "@type": "Person", "name": "Atul" },
+      "offers": { "@type": "Offer", "price": "0.00", "priceCurrency": "USD" }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to Merge PDF Files Online Privately",
+      "step": [
+        { "@type": "HowToStep", "name": "Upload PDFs", "text": "Drag and drop your PDF files into the drop zone or click to browse." },
+        { "@type": "HowToStep", "name": "Reorder Pages", "text": "Arrange the files or pages in your desired sequence." },
+        { "@type": "HowToStep", "name": "Merge & Download", "text": "Click 'Merge PDFs' to download your combined PDF instantly." }
+      ]
+    }
+    </script>
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/@cantoo/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="style.css?v=7">
+</head>
+
+<body>
+    <div class="background-mesh">
+        <div class="mesh-1"></div>
+        <div class="mesh-2"></div>
+        <div class="mesh-3"></div>
+    </div>
+    <div id="toast-container"></div>
+
+    <div class="app-container">
+        <main class="glass-content full-width">
+            <!-- NAVBAR -->
+            <nav class="site-navbar">
+                <div class="navbar-inner">
+                    <a href="index.html" class="navbar-brand">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>EdityourPDF</span>
+                    </a>
+                    <div class="navbar-links">
+                        <a href="index.html" class="nav-link"><i class="fa-solid fa-file-pdf"></i> All PDF Tools</a>
+                        <a href="merge-pdf.html" class="nav-link nav-link-highlight"><i class="fa-solid fa-copy"></i> Merge PDF</a>
+                        <a href="compress-pdf.html" class="nav-link"><i class="fa-solid fa-compress"></i> Compress PDF</a>
+                        <a href="pdf-to-word.html" class="nav-link"><i class="fa-solid fa-file-word"></i> PDF to Word</a>
+                        <a href="pdf-ocr.html" class="nav-link"><i class="fa-solid fa-eye"></i> OCR</a>
+                        <a href="image-editor.html" class="nav-link"><i class="fa-solid fa-image"></i> Image Editor</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- HERO & MERGE TOOL BOX -->
+            <section class="glass-content full-width flex-center" style="padding:40px 20px;">
+                <div class="center-box" style="max-width:700px;width:100%;text-align:center;">
+                    <h1 style="font-size:2.4rem;margin-bottom:10px;font-family:var(--font-heading);">Combine & Merge PDF Files Online</h1>
+                    <p style="color:var(--text-muted);margin-bottom:30px;font-size:1.1rem;">
+                        Join multiple PDFs into a single document in seconds. <strong>100% Client-Side Privacy</strong> — files never leave your device.
+                    </p>
+
+                    <div class="upload-zone" id="merge-drop-zone" style="padding:40px 20px;border:2px dashed rgba(255,255,255,0.4);border-radius:16px;cursor:pointer;">
+                        <i class="fa-solid fa-copy" style="font-size:3.5rem;color:var(--accent-color);margin-bottom:15px;"></i>
+                        <h3 style="margin-bottom:8px;">Choose PDF files or drop them here</h3>
+                        <p style="font-size:0.9rem;color:var(--text-muted);">Supports batch merging of unlimited PDF documents</p>
+                        <input type="file" id="merge-upload-input" multiple accept=".pdf" hidden>
+                    </div>
+
+                    <a href="index.html" class="glass-btn secondary" style="margin-top:25px;display:inline-block;">
+                        <i class="fa-solid fa-arrow-left"></i> Explore All PDF Tools
+                    </a>
+                </div>
+            </section>
+
+            <!-- HOW IT WORKS & CONTENT SECTION FOR SEO -->
+            <section style="max-width:900px;margin:40px auto;padding:0 20px;">
+                <div class="glass-panel" style="padding:30px;">
+                    <h2 style="font-size:1.8rem;margin-bottom:20px;">How to Merge PDFs Privately in 3 Easy Steps</h2>
+                    <ol style="line-height:1.8;margin-left:20px;margin-bottom:30px;">
+                        <li><strong>Upload Your Documents:</strong> Click the drop zone above or drag and drop multiple PDF files from your computer or phone.</li>
+                        <li><strong>Reorder Pages & Files:</strong> Drag file thumbnails to re-sequence document pages in your preferred order.</li>
+                        <li><strong>Download Combined PDF:</strong> Click 'Merge PDFs' to download your consolidated PDF file instantly.</li>
+                    </ol>
+
+                    <h2 style="font-size:1.8rem;margin-bottom:20px;">Why Choose EdityourPDF to Combine PDF Files?</h2>
+                    <ul style="line-height:1.8;margin-left:20px;">
+                        <li>🔒 <strong>100% Privacy Guarantee:</strong> Unlike server-based online tools (iLovePDF, Smallpdf), EdityourPDF processes files entirely in your browser using JavaScript. No document data is ever transmitted over the network or saved to remote servers.</li>
+                        <li>⚡ <strong>Blazing Fast Execution:</strong> Because files aren't uploaded or downloaded from external servers, merging happens at local memory speeds.</li>
+                        <li>🆓 <strong>100% Free & Unlimited:</strong> No hidden file limits, daily caps, or forced paid subscriptions.</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="pdf-manager.js"></script>
+    <script src="advanced-tools.js"></script>
+</body>
+</html>
